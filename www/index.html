@@ -494,7 +494,7 @@ function clearAllData(){if(confirm('确定清空所有累计数据吗？此操�
   todayStr=localDateString();
   selectedDate=todayStr;
   weekCursor=getMonday(todayStr);
-  renderDashboard();renderTree();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();loadDailyCodeQuestion();startDateWatcher();
+  renderDashboard();renderTree();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();startDateWatcher();
   // 首次启动/升级后立即建立 IndexedDB 快照。
   await writeSnapshotToIDB();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
