@@ -1,0 +1,16 @@
+{
+  "name": "zhuxi-apk",
+  "version": "3.0.0",
+  "private": true,
+  "description": "筑习 Android APK build project",
+  "scripts": {
+    "build:android": "npx cap add android && npx cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/android": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
