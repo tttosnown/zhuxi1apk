@@ -1,1 +1,595 @@
-。
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>筑习 - 建筑考研学习系统 3.0</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#f6f6f3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="筑习">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<meta name="theme-color" content="#F2F2F7">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<style>
+:root{--bg:#F2F2F7;--card:#FFF;--text:#1C1C1E;--sub:#8E8E93;--line:#C6C6C8;--accent:#000000;--green:#34C759;--red:#FF3B30;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);padding-bottom:90px;max-width:600px;margin:auto}
+header{background:rgba(255,255,255,.88);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;padding:16px 20px;border-bottom:.5px solid var(--line)}
+header h1{font-size:18px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.container{padding:16px}.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:.5px solid rgba(0,0,0,.04)}
+.card h2{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+input,select,textarea{width:100%;padding:10px 12px;border-radius:8px;border:.5px solid var(--line);background:#F9F9FB;font-size:14px;margin-bottom:10px;outline:none}
+input:focus,textarea:focus{border-color:var(--accent);background:#fff}
+.btn{background:var(--accent);color:#fff;border:0;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;width:100%}
+.btn-secondary{background:#E5E5EA;color:var(--text)}.btn-small{padding:4px 10px;font-size:12px;width:auto}
+.delete-btn{background:var(--red);color:#fff;border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
+.edit-btn{background:#E5E5EA;color:var(--text);border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;background:#E5E5EA}
+.tab-content{display:none}.tab-content.active{display:block}
+nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(20px);display:flex;justify-content:space-around;padding:8px 2px 20px;border-top:.5px solid var(--line);z-index:1000;max-width:600px;margin:auto}
+.tab-item{text-align:center;font-size:10px;color:var(--sub);cursor:pointer;flex:1}.tab-item.active{color:var(--accent);font-weight:600}.tab-item span{display:block;font-size:16px;margin-bottom:2px}
+.routine-week-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.routine-week-title{font-size:11px;color:var(--sub);flex:1;text-align:center}.routine-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px;touch-action:pan-y}.routine-day{background:#FAFAFC;border-radius:8px;padding:8px 4px;text-align:center;font-size:11px;border:.5px solid var(--line);cursor:pointer;transition:.15s}.routine-day.today{border-color:var(--accent);background:#F0F6FF}.routine-day.selected{border-color:#111;background:#F1F1F3;box-shadow:inset 0 0 0 1px #111}.routine-day.selected.today{background:#E9F1FA}
+.color-dots{display:flex;justify-content:center;gap:3px;flex-wrap:wrap;min-height:12px;margin-top:4px}.dot{width:7px;height:7px;border-radius:50%}
+.dot-建筑史{background:#AF52DE}.dot-建筑理论{background:#5856D6}.dot-建筑物理{background:#007AFF}.dot-构造技术{background:#34C759}.dot-英语{background:#FF9500}.dot-政治{background:#FF3B30}.dot-通用{background:#8E8E93}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}.month-cell{background:#FAFAFC;border-radius:6px;padding:6px 2px;text-align:center;font-size:11px;border:.5px solid var(--line);min-height:45px;cursor:pointer}
+.task-item{background:#FAFAFC;padding:12px;border-radius:10px;border:.5px solid var(--line);margin-bottom:8px}.task-row{display:flex;align-items:center;justify-content:space-between}.task-info{display:flex;align-items:center;gap:10px;flex:1}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:16px}.modal.active{display:flex}.recall-progress{font-size:12px;color:var(--sub);margin-bottom:10px}.recall-question{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:14px;line-height:1.55}.recall-options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.recall-opt{border:1px solid var(--line);background:white;border-radius:8px;padding:8px 3px;font-size:11px;cursor:pointer}.recall-opt.selected{background:#eee7f5;border-color:#b9a2ce;font-weight:600}.recall-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.modal-content{background:#fff;border-radius:16px;width:100%;max-width:450px;max-height:85vh;overflow-y:auto;padding:20px}
+.tree-list{list-style:none;padding-left:18px;position:relative}.tree-node{margin:6px 0}.tree-node-content{display:flex;align-items:center;gap:6px;background:#F9F9FB;padding:6px 10px;border-radius:8px;border:.5px solid var(--line);width:max-content;max-width:100%}.tree-node-content input{border:0;background:transparent;padding:2px 4px;margin:0;width:auto}.tree-actions{display:flex;gap:4px}.tree-actions button{padding:2px 6px;font-size:11px;border:0;border-radius:4px}.search-result{padding:9px;border-bottom:.5px solid var(--line);font-size:12px}.muted{font-size:11px;color:var(--sub)}.actions{display:flex;gap:6px;margin-top:8px}.actions>*{flex:0 0 auto}
+.swipe-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:8px;background:#000;isolation:isolate}
+.swipe-content{position:relative;z-index:2;transition:transform .22s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
+.swipe-actions{position:absolute;z-index:1;inset:0 0 0 auto;width:128px;display:flex;align-items:stretch;background:#000}
+.swipe-action{width:64px;height:100%;min-height:100%;border:0;color:#fff;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.swipe-action.edit{background:#8E8E93;color:#fff}
+.swipe-action.delete{background:#000;color:#fff}
+.swipe-wrap.open .swipe-content{transform:translateX(-128px)}
+.swipe-hint{font-size:10px;color:var(--sub);margin-top:6px;text-align:right}
+@media(min-width:700px){.swipe-wrap{overflow:visible}.swipe-actions{display:none}.swipe-content{transform:none!important}.swipe-hint{display:none}}
+
+.study-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.study-stat{background:var(--soft,#f8f8fa);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.study-stat .num{font-size:20px;font-weight:700;line-height:1.2}.study-stat .label{font-size:11px;color:var(--sub);margin-top:4px}
+.study-chart-title{font-size:12px;font-weight:600;margin:12px 0 8px}
+.week-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;align-items:end;height:120px;padding:4px 2px 0}
+.week-bar-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
+.week-bar{width:22px;max-width:70%;min-height:3px;border-radius:6px 6px 3px 3px;background:var(--accent,#c9b5dc)}
+.week-bar-num{font-size:9px;color:var(--sub)}.week-bar-day{font-size:10px;color:var(--sub)}
+.subject-bars{display:grid;gap:7px}.subject-row{display:grid;grid-template-columns:72px 1fr 38px;gap:7px;align-items:center;font-size:11px}
+.subject-track{height:8px;background:var(--soft,#f2f2f5);border-radius:99px;overflow:hidden}.subject-fill{height:100%;border-radius:99px;background:var(--accent,#c9b5dc)}
+
+.day-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.day-status-item{min-width:0;background:#FAFAFC;border:.5px solid var(--line);border-radius:10px;padding:10px 7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text);font:inherit}
+.day-status-item:active{background:#F1F1F3}
+.day-status-name{font-size:11px;color:var(--sub)}
+.day-status-value{font-size:11px;min-height:20px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.routine-status{display:flex;justify-content:center;align-items:center;gap:3px;min-height:20px;margin-top:3px}
+.routine-coffee{font-size:12px;line-height:1}
+@media(max-width:430px){.day-status-grid{gap:5px}.day-status-item{padding:9px 4px}.day-status-value{font-size:10px}}
+.day-records{margin-top:10px;padding:11px 12px;background:#F9F9FB;border:.5px solid var(--line);border-radius:10px}.day-record-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}.day-record-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.day-record-item{min-width:0;background:#fff;border:.5px solid var(--line);border-radius:8px;padding:8px 6px;display:flex;flex-direction:column;gap:5px}.day-record-label{font-size:10px;color:var(--sub)}.day-record-value{font-size:11px;min-height:20px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;text-overflow:ellipsis}.day-record-value .mood-face{margin-right:3px}@media(max-width:430px){.day-record-grid{gap:5px}.day-record-item{padding:7px 4px}.day-record-value{font-size:10px}}
+.mood-face{width:24px;height:24px;border-radius:50%;background:#f3a9c6;display:inline-flex;position:relative;align-items:center;justify-content:center;box-shadow:inset 0 -2px 0 rgba(180,75,120,.10);vertical-align:middle;flex:0 0 auto}
+.mood-face .eyes{position:absolute;top:7px;left:5px;right:5px;height:4px}
+.mood-face .eyes:before,.mood-face .eyes:after{content:"";position:absolute;width:3px;height:4px;background:#6d3d55;border-radius:50%}
+.mood-face .eyes:before{left:0}.mood-face .eyes:after{right:0}
+.mood-face .mouth{position:absolute;left:7px;right:7px;top:14px;height:5px;border-bottom:2px solid #6d3d55;border-radius:0 0 10px 10px}
+.mood-face.mood-tired .mouth{top:15px;border-bottom:0;border-top:2px solid #6d3d55;border-radius:10px 10px 0 0}
+.mood-face.mood-unwell .mouth{top:15px;height:3px;border-bottom:2px solid #6d3d55;border-radius:0}
+.mood-face.mood-bored .mouth{top:15px;border-bottom:2px solid #6d3d55;border-radius:0}
+.mood-face.mood-angry .mouth{top:15px;border-bottom:2px solid #6d3d55;border-radius:0;transform:rotate(8deg)}
+.mood-face.mood-breakdown .mouth{top:14px;height:7px;border:2px solid #6d3d55;border-radius:50%}
+.mood-face.mood-calm .mouth{top:15px;border-bottom:1.5px solid #6d3d55;border-radius:0}
+.mood-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.mood-option{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 4px 7px;text-align:center;cursor:pointer;font-size:11px;color:var(--text)}
+.mood-option.selected{border-color:#e58db2;background:#fff2f7;box-shadow:0 0 0 2px rgba(229,141,178,.14)}
+.mood-option .mood-face{display:flex;margin:0 auto 5px;width:30px;height:30px}
+.mood-note{font-size:12px;color:var(--sub);margin-top:10px}
+.month-mood{height:26px;display:flex;justify-content:center;align-items:center;margin-top:2px}
+.month-cell.has-mood{background:#fff6fa;border-color:#f1c2d5}
+.chart-panel{background:#fbf9fb;border:1px solid #eee7ee;border-radius:10px;padding:10px;margin-top:8px}
+.trend-svg{width:100%;height:150px;display:block}
+.trend-labels{display:grid;gap:2px;margin-top:2px;font-size:9px;color:var(--sub);text-align:center}
+.chart-empty{padding:22px 10px;text-align:center;color:var(--sub);font-size:12px}
+.fam-row{padding:11px 0;border-bottom:.5px solid var(--line);cursor:pointer}.fam-row:last-child{border-bottom:0}.fam-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.fam-title{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fam-meta{font-size:10px;color:var(--sub);margin-top:4px}.fam-bar{height:7px;background:#eee;border-radius:99px;overflow:hidden;margin-top:7px}.fam-fill{height:100%;background:#000;border-radius:99px}.fam-filter{display:grid;grid-template-columns:1fr 1fr;gap:6px}.random-card{background:#faf7fc;border:1px solid #eadff0;border-radius:10px;padding:12px;margin-top:10px}.random-item{padding:10px 0;border-bottom:.5px solid var(--line)}.random-item:last-child{border-bottom:0}
+
+@media(max-width:480px){.study-stat-grid{grid-template-columns:repeat(3,1fr)}.study-stat{padding:8px 4px}.study-stat .num{font-size:18px}}
+
+/* 顶部三点菜单 */
+.header-actions{position:relative}
+.menu-trigger{width:36px!important;height:32px;padding:0!important;font-size:22px!important;line-height:28px}
+.side-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.22);z-index:2000;display:none}
+.side-menu-overlay.active{display:block}
+.side-menu{position:absolute;top:0;right:0;height:100%;width:min(280px,82vw);background:rgba(255,255,255,.98);backdrop-filter:blur(24px);box-shadow:-8px 0 30px rgba(0,0,0,.12);padding:70px 18px 24px;transform:translateX(100%);transition:transform .22s ease}
+.side-menu-overlay.active .side-menu{transform:translateX(0)}
+.side-menu h3{font-size:17px;margin-bottom:16px}
+.side-menu-btn{width:100%;display:flex;align-items:center;gap:10px;padding:13px 12px;margin-bottom:8px;border:0;border-radius:12px;background:#F2F2F7;color:var(--text);font-size:14px;text-align:left;cursor:pointer}
+.side-menu-close{position:absolute;top:18px;right:16px;width:34px;height:34px;border:0;border-radius:50%;background:#F2F2F7;font-size:22px;color:var(--sub)}
+.side-menu-note{font-size:12px;color:var(--sub);line-height:1.6;margin:8px 12px 18px}
+
+.recall-lock{touch-action:none}.recall-lock .modal-content{touch-action:auto}
+
+.recall-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:#F2F2F7;color:#555;font-size:24px;line-height:30px;text-align:center;cursor:pointer;padding:0}
+.recall-close:hover{background:#e8e8ed;color:#111}
+
+
+/* 启动封面：保持简洁白底，约 0.9 秒后进入筑习 */
+#startupSplash{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;opacity:1;visibility:visible;transition:opacity .25s ease,visibility .25s ease}
+#startupSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+#startupSplashInner{display:flex;flex-direction:column;align-items:center;justify-content:center;transform:translateY(-2vh)}
+#startupSplash img{width:92px;height:92px;object-fit:contain;border-radius:22px;margin-bottom:16px}#startupSplashFallback{display:none;width:92px;height:92px;border-radius:22px;background:#f0f0f2;color:#111;align-items:center;justify-content:center;font-size:46px;font-weight:600;letter-spacing:-4px;margin-bottom:16px;border:1px solid #ddd}
+#startupSplashName{font-size:22px;letter-spacing:1.5px;color:#111;font-weight:500}
+</style>
+</head>
+<body>
+<div id="startupSplash" aria-label="zhuxi 启动封面"><div id="startupSplashInner"><img id="startupSplashIcon" src="./icon-180.png" alt="筑习" onerror="this.style.display='none';document.getElementById('startupSplashFallback').style.display='flex'"><div id="startupSplashFallback" aria-hidden="true">筑</div><div id="startupSplashName">zhuxi</div></div></div>
+<header><h1><span>筑习 <span style="font-size:12px;color:var(--sub);font-weight:normal">3.0</span></span><span class="header-actions"><button class="btn btn-small btn-secondary menu-trigger" aria-label="打开菜单" onclick="toggleSideMenu()">⋯</button></span></h1></header>
+
+<div id="sideMenuOverlay" class="side-menu-overlay" onclick="if(event.target===this)closeSideMenu()">
+  <aside class="side-menu" onclick="event.stopPropagation()">
+    <button class="side-menu-close" aria-label="关闭菜单" onclick="closeSideMenu()">×</button>
+    <h3>筑习菜单</h3>
+    <div id="sideAuthHint" class="side-menu-note">本地优先：数据只保存在你的设备，不需要账号。</div>
+    <button id="sideInstallBtn" class="side-menu-btn" onclick="closeSideMenu();installApp()">📱　安装到桌面</button>
+    <button class="side-menu-btn" onclick="closeSideMenu();openSystemSettings()">⚙　系统设置</button>
+    <button class="side-menu-btn" onclick="closeSideMenu();openDataManager()">💾　数据与备份</button>
+    <button class="side-menu-btn" onclick="closeSideMenu();exportDataJSON()">📤　导出备份</button>
+  </aside>
+</div>
+
+<div class="container">
+<section id="tab-dashboard" class="tab-content active">
+<div class="card"><div class="routine-week-head"><button class="btn btn-small btn-secondary" onclick="changeWeek(-1)">‹</button><h2 style="margin:0;justify-content:center;flex:1">▦ 周历 <span class="muted" id="routineWeekTitle"></span></h2><button class="btn btn-small btn-secondary" onclick="changeWeek(1)">›</button></div><div class="routine-grid" id="routineGridContainer"></div><div class="muted" style="text-align:center;margin-top:7px">点击日期切换下方任务 · 左右滑动切换周</div></div>
+<div class="card day-status-card">
+<h2 style="margin-bottom:10px">◌ 当天状态 <span class="muted" id="selectedDateLabel"></span></h2>
+<div id="dayStatusContainer"></div>
+</div>
+<div class="card calendar-card">
+<h2 style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span>▦ 累计学习与月历全景</span>
+<span style="display:flex;align-items:center;gap:6px">
+<button class="btn btn-small btn-secondary" onclick="changeMonth(-1)">‹</button>
+<span class="muted" id="currentMonthTitle"></span>
+<button class="btn btn-small btn-secondary" onclick="changeMonth(1)">›</button>
+<button class="btn btn-small btn-secondary" onclick="toggleCalendar()" aria-label="展开或收起月历">⋯</button>
+</span></h2>
+<div id="calendarBody"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub)"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="month-grid" id="monthGridContainer"></div></div></div>
+<div class="card">
+<h2>◫ 学习数据 <span class="muted">自动从你的任务记录统计</span></h2>
+<div id="studyStats"></div>
+</div>
+<div class="card"><h2><span id="taskListTitle">今日任务清单</span> <button class="btn btn-small" onclick="openTaskModal()">+ 添加任务</button></h2><div id="taskListContainer"></div></div>
+</section>
+
+<section id="tab-tree" class="tab-content"><div class="card"><h2>⌘ 学科思维导图与无限知识树</h2><p class="muted" style="margin-bottom:12px">可修改节点名称、添加同级新学科、添加子节点或删除分支。</p><button class="btn btn-small" onclick="addRootNode()" style="margin-bottom:10px">＋ 新增学科</button><div id="treeRootContainer"></div></div></section>
+
+<section id="tab-norms" class="tab-content">
+<div class="card"><h2>§ 每日建筑规范考点抽查</h2><div style="background:#F9F9FB;padding:12px;border-radius:8px;margin-bottom:10px;border:.5px solid var(--line)">
+<p id="codeQTitle" style="font-weight:600;font-size:13px;margin-bottom:4px">正在加载正式规范题库…</p>
+<p id="codeQContent" style="font-size:13px;margin-bottom:8px"></p>
+<button class="btn btn-small btn-secondary" onclick="toggleCodeAnswer()">查看解析</button>
+<div id="codeQAnswer" style="display:none;margin-top:8px;padding-top:8px;border-top:.5px dashed var(--line);font-size:13px;color:#16883A"></div></div>
+<button class="btn btn-secondary" onclick="loadDailyCodeQuestion()">换一题</button></div>
+<div class="card"><h2>⌕ 规范题库智能搜索</h2><div style="display:flex;gap:6px;margin-bottom:10px"><input id="searchInput" placeholder="输入规范名称、条文、关键词" style="margin:0"><button class="btn btn-small" onclick="searchNorms()" style="white-space:nowrap">查找</button></div><div id="searchResults" style="max-height:300px;overflow-y:auto;border:.5px solid var(--line);border-radius:8px;padding:8px;background:#FAFAFC"><div class="muted" style="text-align:center;padding:6px">输入关键词检索正式规范题库。</div></div></div>
+</section>
+
+<section id="tab-english" class="tab-content"><div class="card"><h2>A 每日英语错误复盘 <button class="btn btn-small" onclick="openEnglishModal()">+ 记一条错误</button></h2><p class="muted" style="margin-bottom:8px">本地永久保存错误记录与复盘心得。<span style="display:block;margin-top:3px">手机端左滑记录即可显示“修改 / 删除”。</span></p><div id="englishErrorListContainer"></div><button class="btn btn-secondary" style="margin-top:12px" onclick="openEnglishMonthlySummaryModal()">📊 查看英语月度错误总结</button></div></section>
+
+<section id="tab-vulnerability" class="tab-content"><div class="card"><h2>↻ Random <span class="muted">到期回忆</span></h2><p class="muted">低熟悉度知识点会在间隔后自动进入这里，优先处理低分和久未复习内容。</p><div id="randomList"></div></div><div class="card"><h2>! 专业课细节点漏洞本 <button class="btn btn-small" onclick="openVulnerabilityModal()">+ 记个小漏洞</button></h2><p class="muted" style="margin-bottom:8px">记录知道但无法完整复述的知识点。<span style="display:block;margin-top:3px">手机端左滑记录即可显示“修改 / 删除”。</span></p><div id="vulnerabilityListContainer"></div></div></section>
+
+<section id="tab-familiarity" class="tab-content"><div class="card"><h2>◔ 熟悉度追踪 <span class="muted">长期变化</span></h2><p class="muted" style="margin-bottom:10px">这里只统计已经完成过五题回忆的知识点。每次回忆都会留下历史记录。</p><div class="fam-filter"><input id="famSearch" placeholder="搜索知识点" oninput="renderFamiliarity()"><select id="famSort" onchange="renderFamiliarity()"><option value="low">当前熟悉度最低</option><option value="recent">最近测试</option><option value="old">最久未测试</option><option value="count">测试次数最多</option></select></div><div id="familiarityList" style="margin-top:10px"></div></div><div class="card"><h2>◌ 熟悉度说明</h2><p class="muted" style="line-height:1.7">五题平均分会转换为百分制。历史记录不会被新一次回忆覆盖，因此可以观察“记住 → 遗忘 → 再记住”的变化。</p></div></section><section id="tab-settings" class="tab-content"><div class="card"><h2>▥ 每周自动学习总结</h2><div id="weeklySummaryContent" style="background:#F9F9FB;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;border:.5px solid var(--line);margin-bottom:12px"></div><div id="weeklyChart"></div><button class="btn btn-secondary" onclick="renderWeeklySummary()">🔄 刷新周报数据</button></div><div class="card"><h2>▦ 月度学习总结</h2><div id="monthlySummaryContent" style="background:#F9F9FB;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;border:.5px solid var(--line);margin-bottom:12px"></div><div id="monthlyChart"></div><button class="btn btn-secondary" onclick="renderMonthlySummary()">🔄 刷新月报数据</button></div>
+</section>
+</div>
+
+<div id="genericModal" class="modal"><div class="modal-content"><h2 id="genericTitle" style="margin-bottom:10px"></h2><div id="genericBody"></div><button class="btn btn-secondary" onclick="closeModal()" style="margin-top:15px">关闭</button></div></div><input id="importFileInput" type="file" accept="application/json,.json" style="display:none" onchange="handleImportFile(event)">
+
+<div id="englishModal" class="modal"><div class="modal-content"><h2 id="englishModalTitle">A 记录英语错误</h2><label class="muted">① 错误类型：</label><select id="errType"><option>选项辨析</option><option>细节定位</option><option>词义/熟词僻义</option><option>长难句理解</option><option>逻辑判断</option><option>粗心/误读</option><option>其他</option></select><label class="muted">② 错误次数：</label><input id="errCount" type="number" min="1" max="999" step="1" value="1" inputmode="numeric"><label class="muted">③ 为什么错？</label><textarea id="errReason" rows="3"></textarea><label class="muted">④ 下次提醒：</label><input id="errTip"><div style="display:flex;gap:10px"><button class="btn" onclick="saveEnglishError()">保存</button><button class="btn btn-secondary" onclick="closeEnglishModal()">取消</button></div></div></div>
+
+<div id="recallModal" class="modal recall-lock"><div class="modal-content" style="position:relative"><button class="recall-close" aria-label="退出五题回忆检测" onclick="closeRecall()">×</button><h2>◎ 五题回忆检测</h2><div id="recallProgress" class="recall-progress"></div><div id="recallBody"></div></div></div>
+<div id="vulnModal" class="modal"><div class="modal-content"><h2 id="vulnModalTitle">! 记个未完全掌握的细节点</h2><label class="muted">细节点描述：</label><textarea id="vulnDesc" rows="4"></textarea><div style="display:flex;gap:10px"><button class="btn" onclick="saveVulnerability()">保存</button><button class="btn btn-secondary" onclick="closeVulnerabilityModal()">取消</button></div></div></div>
+
+<nav class="tab-bar"><div class="tab-item active" onclick="switchTab('dashboard',this)"><span>▦</span>看板</div><div class="tab-item" onclick="switchTab('tree',this)"><span>⌘</span>知识树</div><div class="tab-item" onclick="switchTab('norms',this)"><span>§</span>规范</div><div class="tab-item" onclick="switchTab('english',this)"><span>A</span>英语</div><div class="tab-item" onclick="switchTab('vulnerability',this)"><span>!</span>专业漏洞</div><div class="tab-item" onclick="switchTab('familiarity',this)"><span>◔</span>熟悉度</div><div class="tab-item" onclick="switchTab('settings',this)"><span>▥</span>周报</div></nav>
+
+<script>
+const KEY='zhuxi_v1_2_';
+function localDateString(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+let todayStr=localDateString();
+let selectedDate=todayStr;
+let weekCursor=getMonday(todayStr);
+const subjects=["建筑史","建筑理论","建筑物理","构造技术","英语","政治","自定义"];
+function getData(k,d){try{const v=localStorage.getItem(KEY+k);return v?JSON.parse(v):d}catch(e){return d}}
+
+// 筑习 3.0：本地优先存储。localStorage 负责兼容旧版本，IndexedDB 作为长期本地数据库副本。
+const ZHUXI_DB='zhuxi_local_v3', ZHUXI_STORE='snapshots';
+let dbPromise=null, idbTimer=null;
+function openZhuxiDB(){
+  if(!('indexedDB' in window)) return Promise.resolve(null);
+  if(dbPromise)return dbPromise;
+  dbPromise=new Promise(resolve=>{
+    const req=indexedDB.open(ZHUXI_DB,1);
+    req.onupgradeneeded=()=>{try{req.result.createObjectStore(ZHUXI_STORE)}catch(e){}};
+    req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve(null);
+  });
+  return dbPromise;
+}
+function makeLocalSnapshot(){return {tasks,subjectTree,englishErrors,vulnerabilities,moods,coffees,distracts,familiarityHistory,version:3,updated_at:new Date().toISOString()}}
+function writeSnapshotToIDB(){
+  return openZhuxiDB().then(db=>{if(!db)return;return new Promise(resolve=>{
+    try{const tx=db.transaction(ZHUXI_STORE,'readwrite');tx.objectStore(ZHUXI_STORE).put(makeLocalSnapshot(),'current');tx.oncomplete=()=>resolve();tx.onerror=()=>resolve();}
+    catch(e){resolve()}
+  })});
+}
+function scheduleLocalDB(){clearTimeout(idbTimer);idbTimer=setTimeout(()=>writeSnapshotToIDB(),80)}
+function saveData(k,v){localStorage.setItem(KEY+k,JSON.stringify(v));scheduleLocalDB()}
+async function loadLocalSnapshot(){
+  const db=await openZhuxiDB(); if(!db)return false;
+  const snap=await new Promise(resolve=>{try{const tx=db.transaction(ZHUXI_STORE,'readonly');const r=tx.objectStore(ZHUXI_STORE).get('current');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>resolve(null)}catch(e){resolve(null)}});
+  if(!snap)return false;
+  const localExists=['tasks','tree','english_errors','vulnerabilities','moods','coffees','distracts','familiarity_history'].some(k=>localStorage.getItem(KEY+k)!==null);
+  if(!localExists){
+    tasks=Array.isArray(snap.tasks)?snap.tasks:tasks; subjectTree=snap.subjectTree||subjectTree; englishErrors=Array.isArray(snap.englishErrors)?snap.englishErrors:englishErrors; vulnerabilities=Array.isArray(snap.vulnerabilities)?snap.vulnerabilities:vulnerabilities; moods=snap.moods||moods; coffees=snap.coffees||coffees; distracts=snap.distracts||distracts; familiarityHistory=Array.isArray(snap.familiarityHistory)?snap.familiarityHistory:familiarityHistory;
+    localStorage.setItem(KEY+'tasks',JSON.stringify(tasks));localStorage.setItem(KEY+'tree',JSON.stringify(subjectTree));localStorage.setItem(KEY+'english_errors',JSON.stringify(englishErrors));localStorage.setItem(KEY+'vulnerabilities',JSON.stringify(vulnerabilities));localStorage.setItem(KEY+'moods',JSON.stringify(moods));localStorage.setItem(KEY+'coffees',JSON.stringify(coffees));localStorage.setItem(KEY+'distracts',JSON.stringify(distracts));localStorage.setItem(KEY+'familiarity_history',JSON.stringify(familiarityHistory));
+  }
+  localStorage.setItem(KEY+'idb_migrated','1'); return true;
+}
+let tasks=getData('tasks',[]);
+let subjectTree=getData('tree',{id:1,name:"建筑考研核心知识体系",children:[{id:2,name:"建筑史",children:[]},{id:3,name:"建筑理论与设计",children:[]},{id:4,name:"建筑物理与构造",children:[]}]});
+let englishErrors=getData('english_errors',[]);
+let vulnerabilities=getData('vulnerabilities',[]);
+let moods=getData('moods',{});
+let coffees=getData('coffees',{});
+let distracts=getData('distracts',{});
+let familiarityHistory=getData('familiarity_history',[]);
+let codeItems=[],codeBankPromise=null,currentCode=null,normLibrary=[],normLibraryPromise=null,normSearchResults=[],editingEnglishId=null,editingVulnId=null;
+let localMode=true;
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function switchTab(id,el){document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');el.classList.add('active');if(id==='dashboard')renderDashboard();if(id==='tree')renderTree();if(id==='norms'){loadDailyCodeQuestion();searchNorms();}if(id==='english')renderEnglishErrors();if(id==='vulnerability'){renderVulnerabilities();renderRandom()}if(id==='familiarity')renderFamiliarity();if(id==='settings'){renderWeeklySummary();renderMonthlySummary()}}
+function refreshDateContext(){const now=localDateString();if(now!==todayStr){const old=todayStr;todayStr=now;if(selectedDate===old || !selectedDate)selectedDate=now;weekCursor=getMonday(now)}}
+function startDateWatcher(){setInterval(()=>{const old=todayStr;const now=localDateString();if(now!==old){todayStr=now;if(selectedDate===old)selectedDate=now;weekCursor=getMonday(now);renderDashboard()}},60000)}
+function renderDashboard(){refreshDateContext();renderRoutine();renderMonth();renderDayStatus();renderTasks();renderStudyStats()}
+function renderStudyStats(){
+  const el=document.getElementById('studyStats'); if(!el)return;
+  const all=Array.isArray(tasks)?tasks:[];
+  const total=all.length, done=all.filter(t=>t.completed).length;
+  const rate=total?Math.round(done/total*100):0;
+  const avg=total?Math.round(all.reduce((s,t)=>s+Number(t.mastery||0),0)/total):0;
+  const todayDone=all.filter(t=>t.date===todayStr&&t.completed).length;
+  const d=new Date(),dow=d.getDay()||7,m=new Date(d);m.setDate(d.getDate()-dow+1);
+  const days=['一','二','三','四','五','六','日'];
+  const week=[];
+  for(let i=0;i<7;i++){let x=new Date(m);x.setDate(m.getDate()+i);let ds=x.toISOString().split('T')[0];week.push({label:days[i],count:all.filter(t=>t.date===ds).length,done:all.filter(t=>t.date===ds&&t.completed).length})}
+  const max=Math.max(1,...week.map(x=>x.count));
+  const subjects=['建筑史','建筑理论与设计','建筑物理与构造','规范','英语','其他'];
+  const subjectData=subjects.map(s=>({s,n:all.filter(t=>(t.subject||'其他')===s).length})).filter(x=>x.n);
+  const smax=Math.max(1,...subjectData.map(x=>x.n));
+  el.innerHTML=`
+    <div class="study-stat-grid">
+      <div class="study-stat"><div class="num">${total}</div><div class="label">累计任务</div></div>
+      <div class="study-stat"><div class="num">${rate}%</div><div class="label">完成率</div></div>
+      <div class="study-stat"><div class="num">${avg}%</div><div class="label">平均掌握</div></div>
+    </div>
+    <div class="muted" style="font-size:11px">今日完成 ${todayDone} 项 · 本周 ${week.reduce((s,x)=>s+x.count,0)} 项</div>
+    <div class="study-chart-title">本周任务趋势</div>
+    <div class="week-bars">${week.map(x=>`<div class="week-bar-col"><span class="week-bar-num">${x.count}</span><div class="week-bar" style="height:${Math.max(4,Math.round(x.count/max*82))}px"></div><span class="week-bar-day">${x.label}</span></div>`).join('')}</div>
+    <div class="study-chart-title">任务学科分布</div>
+    <div class="subject-bars">${subjectData.length?subjectData.map(x=>`<div class="subject-row"><span>${esc(x.s)}</span><div class="subject-track"><div class="subject-fill" style="width:${Math.round(x.n/smax*100)}%"></div></div><span>${x.n}</span></div>`).join(''):'<div class="muted">暂无足够数据</div>'}</div>
+  `;
+}
+function getMonday(d){let x=new Date(d+'T12:00:00');let dow=x.getDay()||7;x.setDate(x.getDate()-dow+1);x.setHours(12,0,0,0);return x}
+function changeWeek(delta){
+  const oldSelected=selectedDate||todayStr;
+  const d=new Date(oldSelected+'T12:00:00');
+  d.setDate(d.getDate()+delta*7);
+  selectedDate=localDateString(d);
+  weekCursor=getMonday(selectedDate);
+  renderRoutine();renderMonth();renderTasks();renderDayStatus();
+}
+function selectDate(ds){selectedDate=ds;weekCursor=getMonday(ds);renderRoutine();renderMonth();renderTasks();renderDayStatus();}
+function bindRoutineSwipe(){const c=document.getElementById('routineGridContainer');if(!c||c.dataset.swipeBound)return;c.dataset.swipeBound='1';let sx=0,sy=0;c.addEventListener('touchstart',e=>{if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:true});c.addEventListener('touchend',e=>{if(!sx)return;let dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY;sx=sy=0;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)changeWeek(dx<0?1:-1)},{passive:true})}
+function renderRoutine(){let c=document.getElementById('routineGridContainer');if(!c)return;let m=new Date(weekCursor);m.setHours(12,0,0,0);let names=['周一','周二','周三','周四','周五','周六','周日'];let end=new Date(m);end.setDate(m.getDate()+6);document.getElementById('routineWeekTitle').textContent=`${m.getMonth()+1}月${m.getDate()}日—${end.getMonth()+1}月${end.getDate()}`;c.innerHTML=names.map((n,i)=>{let x=new Date(m);x.setDate(m.getDate()+i);let ds=localDateString(x),ts=tasks.filter(t=>t.date===ds),mo=moods[ds],co=coffees[ds];return `<div class="routine-day ${ds===todayStr?'today ':''}${ds===selectedDate?'selected':''}" onclick="selectDate('${ds}')"><div>${n}</div><div class="muted">${x.getDate()}</div><div class="color-dots">${ts.map(t=>`<i class="dot dot-${esc(t.subject)}"></i>`).join('')}</div><div class="routine-status">${mo?moodFace(mo,true):''}${co?'<span class="routine-coffee" title="已记录咖啡">☕</span>':''}</div></div>`}).join('');bindRoutineSwipe()}
+function moodFace(type,small=false){
+  let cls={happy:'mood-happy',calm:'mood-calm',tired:'mood-tired',unwell:'mood-unwell',bored:'mood-bored',angry:'mood-angry',breakdown:'mood-breakdown'}[type]||'mood-calm';
+  return `<span class="mood-face ${cls}" style="${small?'width:20px;height:20px':''}"><i class="eyes"></i><i class="mouth"></i></span>`;
+}
+const MOODS=[
+  {id:'happy',name:'开心'},
+  {id:'calm',name:'平静'},
+  {id:'tired',name:'劳累'},
+  {id:'unwell',name:'不舒服'},
+  {id:'bored',name:'无聊'},
+  {id:'angry',name:'生气'},
+  {id:'breakdown',name:'崩溃'}
+];
+let calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+function changeMonth(delta){calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+delta,1);renderMonth()}
+function bindCalendarSwipe(){const c=document.getElementById('monthGridContainer');if(!c||c.dataset.swipeBound)return;c.dataset.swipeBound='1';let sx=0,sy=0;c.addEventListener('touchstart',e=>{if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:true});c.addEventListener('touchend',e=>{if(!sx)return;let dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=sy=0;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)changeMonth(dx<0?1:-1)},{passive:true})}
+let calendarCollapsed=false;
+function toggleCalendar(){calendarCollapsed=!calendarCollapsed;const body=document.getElementById('calendarBody');if(body)body.style.display=calendarCollapsed?'none':''}
+function renderDayStatus(){
+  const ds=selectedDate||todayStr, box=document.getElementById('dayStatusContainer'), label=document.getElementById('selectedDateLabel');
+  if(!box)return;
+  if(label)label.textContent=ds;
+  const mood=moods[ds],coffee=coffees[ds],distract=distracts[ds];
+  box.innerHTML=`<div class="day-status-grid">
+    <button class="day-status-item" onclick="openMoodPicker('${ds}')"><span class="day-status-name">心情</span><span class="day-status-value">${mood?moodFace(mood,true)+' '+esc(MOODS.find(m=>m.id===mood)?.name||'已记录'):'未记录'}</span></button>
+    <button class="day-status-item" onclick="openCoffeePicker('${ds}')"><span class="day-status-name">咖啡</span><span class="day-status-value">${coffee?esc(coffeeSummary(coffee).replace(/^已记录：/,'').replace(/^☕ /,'')):'未记录'}</span></button>
+    <button class="day-status-item" onclick="openDistractPicker('${ds}')"><span class="day-status-name">Distract</span><span class="day-status-value">${distract!==undefined?esc(String(distract)+' 分'):'未记录'}</span></button>
+  </div>`;
+}
+function openMoodPicker(ds){const current=moods[ds]||'';document.getElementById('genericTitle').textContent='◌ '+ds+' 心情';document.getElementById('genericBody').innerHTML=`<div class="mood-picker">${MOODS.map(m=>`<button class="mood-option ${current===m.id?'selected':''}" onclick="setMoodQuick('${ds}','${m.id}')">${moodFace(m.id)}<span>${m.name}</span></button>`).join('')}</div><button class="btn btn-secondary" style="margin-top:10px" onclick="clearMoodQuick('${ds}')">清除记录</button>`;document.getElementById('genericModal').classList.add('active')}
+function setMoodQuick(ds,id){moods[ds]=id;saveData('moods',moods);closeModal();renderDashboard()}
+function clearMoodQuick(ds){delete moods[ds];saveData('moods',moods);closeModal();renderDashboard()}
+function openCoffeePicker(ds){const c=coffees[ds]||{};document.getElementById('genericTitle').textContent='☕ '+ds+' 咖啡';document.getElementById('genericBody').innerHTML=`<label class="muted">类型</label><select id="quickCoffeeType"><option value="美式">美式</option><option value="拿铁">拿铁</option><option value="卡布奇诺">卡布奇诺</option><option value="摩卡">摩卡</option><option value="其他">其他</option><option value="custom">自定义</option></select><label class="muted" style="display:block;margin-top:8px">杯数</label><input id="quickCoffeeCount" type="number" min="1" max="20" value="${c.count||1}"><label class="muted" style="display:block;margin-top:8px">时间</label><input id="quickCoffeeTime" type="time" value="${c.time||''}"><button class="btn" style="margin-top:10px" onclick="setCoffeeQuick('${ds}')">保存</button>${c.type?`<button class="btn btn-secondary" style="margin-top:8px" onclick="clearCoffeeQuick('${ds}')">清除记录</button>`:''}`;const type=document.getElementById('quickCoffeeType');if(c.type&&type)type.value=c.type;document.getElementById('genericModal').classList.add('active')}
+function setCoffeeQuick(ds){const type=document.getElementById('quickCoffeeType')?.value||'美式',count=Number(document.getElementById('quickCoffeeCount')?.value||1),time=document.getElementById('quickCoffeeTime')?.value||'';coffees[ds]={type,count,time,customType:type==='custom'?(coffees[ds]?.customType||'自定义'):''};saveData('coffees',coffees);closeModal();renderDashboard()}
+function clearCoffeeQuick(ds){delete coffees[ds];saveData('coffees',coffees);closeModal();renderDashboard()}
+function openDistractPicker(ds){const current=distracts[ds];document.getElementById('genericTitle').textContent='! '+ds+' Distract';document.getElementById('genericBody').innerHTML=`<p class="muted">请选择当天的干扰程度（0 最少，5 最多）</p><div class="distract-picker">${[0,1,2,3,4,5].map(n=>`<button class="btn ${current===n?'selected':''}" onclick="setDistractQuick('${ds}',${n})">${n}</button>`).join('')}</div>${current!==undefined?`<button class="btn btn-secondary" style="margin-top:10px" onclick="clearDistractQuick('${ds}')">清除记录</button>`:''}`;document.getElementById('genericModal').classList.add('active')}
+function setDistractQuick(ds,n){distracts[ds]=n;saveData('distracts',distracts);closeModal();renderDashboard()}
+function clearDistractQuick(ds){delete distracts[ds];saveData('distracts',distracts);closeModal();renderDashboard()}
+function renderMonth(){
+  let y=calendarCursor.getFullYear(),mo=calendarCursor.getMonth(),c=document.getElementById('monthGridContainer');
+  document.getElementById('currentMonthTitle').textContent=`${y}年${mo+1}月`;
+  let first=new Date(y,mo,1).getDay(),off=first===0?6:first-1,days=new Date(y,mo+1,0).getDate(),h='';
+  for(let i=0;i<off;i++)h+='<div class="month-cell" style="opacity:.3"></div>';
+  for(let d=1;d<=days;d++){
+    let ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,ts=tasks.filter(t=>t.date===ds),mood=moods[ds],coffee=coffees[ds],distract=distracts[ds];
+    h+=`<div class="month-cell ${mood||coffee||distract!==undefined?'has-mood':''}" onclick="selectDate('${ds}')"><b>${d}</b><div>${ts.map(t=>`<i class="dot dot-${esc(t.subject)}" style="display:inline-block;width:5px;height:5px;margin:1px"></i>`).join('')}</div><div class="month-mood">${mood?moodFace(mood,true):''}${coffee?'<span style="font-size:15px;margin-left:2px">☕</span>':''}${distract!==undefined?`<span style="font-size:11px;margin-left:2px">📱${distract}</span>`:''}</div></div>`
+  }
+  c.innerHTML=h;bindCalendarSwipe()
+}
+function dayRecordSummary(ds){
+  const mood=moods[ds],coffee=coffees[ds],distract=distracts[ds];
+  const moodName=mood?(MOODS.find(m=>m.id===mood)?.name||'已记录'):'未记录';
+  const coffeeText=coffee?coffeeSummary(coffee).replace(/^已记录：/,''):'未记录';
+  const distractText=distract!==undefined?`${distract} 分`:'未记录';
+  return `<div class="day-records">
+    <div class="day-record-head"><b>当天状态</b><button class="btn btn-small btn-secondary" onclick="openDay('${ds}')">记录 / 修改</button></div>
+    <div class="day-record-grid">
+      <div class="day-record-item"><span class="day-record-label">心情</span><span class="day-record-value">${mood?moodFace(mood,true)+' '+esc(moodName):'未记录'}</span></div>
+      <div class="day-record-item"><span class="day-record-label">咖啡</span><span class="day-record-value">${esc(coffeeText)}</span></div>
+      <div class="day-record-item"><span class="day-record-label">Distract</span><span class="day-record-value">${esc(distractText)}</span></div>
+    </div>
+  </div>`;
+}
+function renderTasks(){
+  let c=document.getElementById('taskListContainer');if(!c)return;
+  let ds=selectedDate||todayStr;
+  let label=ds===todayStr?'今日任务清单':`${ds.slice(5).replace('-','月')}日任务清单`;
+  document.getElementById('taskListTitle').textContent=label;
+  let dayTasks=tasks.filter(t=>t.date===ds);
+  let taskHtml=dayTasks.length?dayTasks.map(t=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="editTask(${t.id})">修改</button><button class="swipe-action delete" onclick="deleteTask(${t.id})">删除</button></div><div class="task-item swipe-content"><div class="task-row"><div class="task-info"><span class="badge">${esc(t.subject||'通用')}</span><span>${esc(t.title)}</span></div><button class="btn btn-small ${t.completed?'btn-secondary':''}" onclick="toggleTask(${t.id})">${t.completed?'✓ 已完成':'完成'}</button></div><div class="muted" style="margin-top:5px">难度：${'★'.repeat(t.difficulty||3)}　${t.customSubject?'不参与熟悉度追踪':`熟悉度：${t.mastery??'—'}%`}</div>${t.customSubject||/英语|政治/.test(String(t.subject||''))?'':`<button class="btn btn-small" style="margin-top:8px" onclick="startRecall(${t.id})">◎ 五题回忆检测</button>`}<div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):`<div class="muted" style="text-align:center;padding:10px">${ds===todayStr?'今日':'当天'}暂无任务，点击上方添加。<br><span style="font-size:10px">当前查看：${ds}</span></div>`;
+  c.innerHTML=taskHtml;
+  initSwipeRows();
+}
+function taskForm(t){let isCustom=!!t?.customSubject;return `<input id="newTaskTitle" placeholder="任务名称" value="${esc(t?.title||'')}"><select id="newTaskSubject" onchange="toggleCustomSubjectField()">${subjects.map(s=>`<option value="${esc(s)}" ${((isCustom&&s==='自定义')||(!isCustom&&s===(t?.subject||subjects[0])))?'selected':''}>${esc(s)}</option>`).join('')}</select><input id="customSubjectName" placeholder="请输入自定义类别名称" value="${isCustom?esc(t?.subject||''):''}" style="margin-top:8px;display:${isCustom?'block':'none'}"><div style="margin-top:8px"><label class="muted">星级：</label><select id="newTaskDifficulty">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===(t?.difficulty||3)?'selected':''}>${'★'.repeat(n)}</option>`).join('')}</select></div><div style="margin-top:8px"><label class="muted">日期：</label><input id="newTaskDate" type="date" value="${t?.date||selectedDate||todayStr}"></div>`}function toggleCustomSubjectField(){let s=document.getElementById('newTaskSubject')?.value,el=document.getElementById('customSubjectName');if(el)el.style.display=s==='自定义'?'block':'none'}function editTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;document.getElementById('genericTitle').textContent='✎ 修改学习任务';document.getElementById('genericBody').innerHTML=taskForm(t)+`<button class="btn" onclick="saveEditedTask(${t.id})" style="margin-top:10px">保存修改</button>`;document.getElementById('genericModal').classList.add('active');closeAllSwipeRows()}
+function saveEditedTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;let title=document.getElementById('newTaskTitle').value.trim();if(!title)return alert('请输入任务名称');let selected=document.getElementById('newTaskSubject').value;let custom=selected==='自定义';let customName=(document.getElementById('customSubjectName')?.value||'').trim();if(custom&&!customName)return alert('请输入自定义类别名称');t.title=title;t.subject=custom?customName:selected;t.customSubject=custom;t.difficulty=+document.getElementById('newTaskDifficulty').value||3;t.date=document.getElementById('newTaskDate').value||todayStr;if(custom){t.mastery=null;t.recall=[];t.lastRecall=null;familiarityHistory=familiarityHistory.filter(r=>String(r.taskId)!==String(t.id));saveData('familiarity_history',familiarityHistory)}saveData('tasks',tasks);closeModal();renderDashboard();renderFamiliarity();renderRandom()}
+function deleteTask(id){if(!confirm('确认删除这个学习任务吗？'))return;tasks=tasks.filter(x=>x.id!==id);saveData('tasks',tasks);renderDashboard()}
+function toggleTask(id){tasks=tasks.map(t=>t.id===id?{...t,completed:!t.completed}:t);saveData('tasks',tasks);renderDashboard()}
+function coffeeSummary(c){if(!c)return '';let t=c.type==='custom'?(c.customType||'自定义'):c.type;return `已记录：☕ ${esc(t)} · ${c.count||1} 杯${c.time?' · '+esc(c.time):''}`}
+function openDay(ds){
+  let ts=tasks.filter(t=>t.date===ds),current=moods[ds]||'',coffee=coffees[ds]||null,distract=distracts[ds];
+  selectedDate=ds;weekCursor=getMonday(ds);renderRoutine();renderMonth();renderTasks();document.getElementById('genericTitle').textContent='▦ '+ds;
+  document.getElementById('genericBody').innerHTML=
+    (ts.length?ts.map(t=>`<div class="search-result"><b>${esc(t.title)}</b><br><span class="muted">${esc(t.subject)} · ${t.completed?'已完成':'未完成'} · 熟悉度 ${t.mastery??'—'}%</span></div>`).join(''):'<p class="muted">当天无任务。</p>')+
+    `<div style="margin-top:14px;padding-top:12px;border-top:.5px solid var(--line)">
+      <b style="font-size:13px">今日心情</b>
+      <div class="mood-picker">${MOODS.map(m=>`<button class="mood-option ${current===m.id?'selected':''}" onclick="selectMood('${ds}','${m.id}')">${moodFace(m.id)}<span>${m.name}</span></button>`).join('')}</div>
+      <div class="mood-note">${current?'已记录：'+MOODS.find(m=>m.id===current)?.name+' · 点击其他表情即可修改':'还没有记录今天的心情'}</div>
+      ${current?`<button class="btn btn-secondary btn-small" style="margin-top:9px;width:100%" onclick="clearMood('${ds}')">清除当天心情</button>`:''}
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:.5px solid var(--line)">
+      <b style="font-size:13px">📱 Distract · 今天学习时被手机/其他事情干扰的程度</b>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:9px">${[0,1,2,3,4,5].map(n=>`<button class="btn btn-small ${distract===n?'':'btn-secondary'}" onclick="setDistract('${ds}',${n})">${n}</button>`).join('')}</div>
+      <div class="mood-note">${distract!==undefined?`已记录：${distract} 分 · 点击其他分数即可修改`:'还没有记录今天的 Distract'}</div>
+      ${distract!==undefined?`<button class="btn btn-secondary btn-small" style="margin-top:9px;width:100%" onclick="clearDistract('${ds}')">清除当天 Distract 记录</button>`:''}
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:.5px solid var(--line)">
+      <b style="font-size:13px">☕ 今天喝咖啡了吗？</b>
+      <div style="display:flex;gap:8px;margin-top:9px"><button class="btn btn-small ${coffee?'':'btn-secondary'}" onclick="setCoffeeNone('${ds}')">没有</button><button class="btn btn-small ${coffee?'':'btn-secondary'}" onclick="showCoffeeForm('${ds}')">${coffee?'已喝 · 修改':'有'}</button></div>
+      ${coffee?`<div class="mood-note" style="margin-top:8px">${coffeeSummary(coffee)}</div><button class="btn btn-secondary btn-small" style="margin-top:9px;width:100%;color:#FF3B30" onclick="clearCoffee('${ds}')">删除当天咖啡记录</button>`:''}
+      <div id="coffeeForm_${ds}" style="margin-top:10px">${coffee?coffeeFormHTML(ds,coffee):''}</div>
+    </div>`;
+  document.getElementById('genericModal').classList.add('active')
+}
+function coffeeFormHTML(ds,c={}){return `<div style="background:#F9F9FB;padding:10px;border-radius:9px;border:.5px solid var(--line)"><label class="muted">咖啡类型</label><select id="coffeeType_${ds}" onchange="toggleCoffeeCustom('${ds}')"><option ${c.type==='美式'?'selected':''}>美式</option><option ${c.type==='拿铁'?'selected':''}>拿铁</option><option ${c.type==='澳白'?'selected':''}>澳白</option><option ${c.type==='冰咖啡'?'selected':''}>冰咖啡</option><option value="custom" ${c.type==='custom'?'selected':''}>自定义</option></select><input id="coffeeCustom_${ds}" placeholder="输入咖啡名称" value="${esc(c.customType||'')}" style="margin-top:7px;display:${c.type==='custom'?'block':'none'}"><label class="muted" style="display:block;margin-top:8px">杯数</label><select id="coffeeCount_${ds}">${[1,2,3,4,5].map(n=>`<option value="${n}" ${Number(c.count||1)===n?'selected':''}>${n} 杯</option>`).join('')}</select><label class="muted" style="display:block;margin-top:8px">时间（可不填）</label><select id="coffeeTime_${ds}"><option value="">不记录</option><option ${c.time==='上午'?'selected':''}>上午</option><option ${c.time==='中午'?'selected':''}>中午</option><option ${c.time==='下午'?'selected':''}>下午</option><option ${c.time==='晚上'?'selected':''}>晚上</option></select><button class="btn btn-small" style="margin-top:9px;width:100%" onclick="saveCoffee('${ds}')">保存咖啡记录</button></div>`}
+function showCoffeeForm(ds){let c=coffees[ds]||{};document.getElementById('coffeeForm_'+ds).innerHTML=coffeeFormHTML(ds,c)}
+function toggleCoffeeCustom(ds){let type=document.getElementById('coffeeType_'+ds)?.value,el=document.getElementById('coffeeCustom_'+ds);if(el)el.style.display=type==='custom'?'block':'none'}
+function saveCoffee(ds){let type=document.getElementById('coffeeType_'+ds)?.value||'美式',customType=document.getElementById('coffeeCustom_'+ds)?.value.trim()||'',count=Number(document.getElementById('coffeeCount_'+ds)?.value||1),time=document.getElementById('coffeeTime_'+ds)?.value||'';if(type==='custom'&&!customType)return alert('请输入自定义咖啡名称');coffees[ds]={type,count,time,customType:type==='custom'?customType:''};saveData('coffees',coffees);renderMonth();openDay(ds)}
+function setCoffeeNone(ds){delete coffees[ds];saveData('coffees',coffees);renderMonth();openDay(ds)}
+function clearCoffee(ds){if(!confirm('确认删除当天的咖啡记录吗？'))return;delete coffees[ds];saveData('coffees',coffees);renderMonth();openDay(ds)}
+function setDistract(ds,score){distracts[ds]=Math.max(0,Math.min(5,Number(score)));saveData('distracts',distracts);renderMonth();openDay(ds)}
+function clearDistract(ds){if(!confirm('确认清除当天的 Distract 记录吗？'))return;delete distracts[ds];saveData('distracts',distracts);renderMonth();openDay(ds)}
+function selectMood(ds,id){moods[ds]=id;saveData('moods',moods);renderMonth();openDay(ds)}
+function clearMood(ds){delete moods[ds];saveData('moods',moods);renderMonth();openDay(ds)}
+function openTaskModal(){closeAllSwipeRows();document.getElementById('genericTitle').textContent='➕ 添加学习任务';document.getElementById('genericBody').innerHTML=taskForm()+`<button class="btn" onclick="saveNewTask()" style="margin-top:10px">保存任务</button>`;document.getElementById('genericModal').classList.add('active')}
+function saveNewTask(){let title=document.getElementById('newTaskTitle').value.trim();if(!title)return alert('请输入任务名称');let selected=document.getElementById('newTaskSubject').value;let custom=selected==='自定义';let customName=(document.getElementById('customSubjectName')?.value||'').trim();if(custom&&!customName)return alert('请输入自定义类别名称');tasks.unshift({id:Date.now(),title,subject:custom?customName:selected,customSubject:custom,date:document.getElementById('newTaskDate').value||todayStr,completed:false,difficulty:+document.getElementById('newTaskDifficulty').value||3,mastery:null,recall:[],repeat:false});saveData('tasks',tasks);closeModal();renderDashboard()}
+function closeModal(){document.getElementById('genericModal').classList.remove('active')}
+function openSystemSettings(){const body=`<p class="muted" style="margin-bottom:12px">本版本不需要登录。所有学习记录自动保存在本设备；建议定期备份，换手机时可导出恢复。</p><button class="btn btn-secondary" onclick="alert('⏰ 20:00 晚间提醒测试成功！')" style="margin-bottom:10px">🔔 测试 20:00 晚间提醒</button><button class="btn btn-secondary" onclick="closeModal();openDataManager()" style="margin-bottom:10px">💾 数据与备份</button><button class="btn btn-secondary" onclick="closeModal();clearAllData()" style="color:#FF3B30">🗑️ 清空所有数据</button>`;document.getElementById('genericTitle').textContent='⚙ 系统设置';document.getElementById('genericBody').innerHTML=body;document.getElementById('genericModal').classList.add('active')}
+
+const recallQuestions=[
+'你是否能够关上书，回忆起这个知识点的背景与来龙去脉？',
+'你是否能够不看书，准确说出这个知识点的定义、核心概念或基本含义？',
+'你是否能够回忆起这个知识点的重要细节、特征、要点或关键案例？',
+'你是否能够把这个知识点的各个部分组织起来，形成有逻辑的完整复述？',
+'你是否能够在考场上独立、快速地把这个知识点完整输出，并应对相关追问？'
+];
+let recallState={taskId:null,index:0,scores:[],source:'五题回忆'};
+
+function toggleSideMenu(){document.getElementById('sideMenuOverlay').classList.toggle('active')}
+function closeSideMenu(){document.getElementById('sideMenuOverlay').classList.remove('active')}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    const m=document.getElementById('recallModal');
+    if(m&&m.classList.contains('active')){e.preventDefault();return;}
+    closeSideMenu();
+  }
+});
+function closeRecall(){document.getElementById('recallModal').classList.remove('active');recallState={taskId:null,index:0,scores:[],source:'五题回忆'};}
+function startRandomRecall(id){let t=tasks.find(x=>x.id===id);if(!t)return;if(t.customSubject||/英语|政治/.test(String(t.subject||'')))return;recallState={taskId:id,index:0,scores:[null,null,null,null,null],source:'Random'};document.getElementById('recallModal').classList.add('active');renderRecallQuestion()}
+function startRecall(id){let t=tasks.find(x=>x.id===id);if(!t)return;if(t.customSubject||/英语|政治/.test(String(t.subject||'')))return;recallState={taskId:id,index:0,scores:Array.isArray(t.recall)?[...t.recall]:[],source:'五题回忆'};if(recallState.scores.length!==5)recallState.scores=[null,null,null,null,null];document.getElementById('recallModal').classList.add('active');renderRecallQuestion()}
+function renderRecallQuestion(){let i=recallState.index,score=recallState.scores[i],labels=['完全不会','较差','一般','较好','非常熟练'];document.getElementById('recallProgress').textContent=`第 ${i+1} / 5 题 · 请先合上书，再判断自己的真实掌握程度`;document.getElementById('recallBody').innerHTML=`<div class="recall-question"><b>${i+1}️⃣ ${recallQuestions[i]}</b><div class="recall-options">${labels.map((x,n)=>`<button class="recall-opt ${score===n+1?'selected':''}" onclick="setRecallScore(${n+1})">${n+1}<br>${x}</button>`).join('')}</div></div><div class="recall-nav"><button class="btn btn-secondary" onclick="prevRecall()" ${i===0?'disabled':''}>上一题</button>${i<4?'<button class="btn" onclick="nextRecall()">下一题</button>':'<button class="btn" onclick="finishRecall()">生成熟悉度</button>'}</div>`}
+function setRecallScore(n){recallState.scores[recallState.index]=n;renderRecallQuestion()}
+function nextRecall(){if(!recallState.scores[recallState.index])return alert('请选择本题掌握程度');recallState.index++;renderRecallQuestion()}
+function prevRecall(){if(recallState.index>0){recallState.index--;renderRecallQuestion()}}
+function finishRecall(){if(recallState.scores.some(x=>!x))return alert('请完成5道回忆题后再生成熟悉度');let t=tasks.find(x=>x.id===recallState.taskId);if(!t)return;let avg=Math.round(recallState.scores.reduce((a,b)=>a+b,0)/5/5*100);let now=new Date(),delay=avg<40?2:avg<60?3:avg<80?3:avg<100?7:14;let next=new Date(now);next.setDate(next.getDate()+delay);t.recall=[...recallState.scores];t.mastery=avg;t.lastRecall=now.toISOString();familiarityHistory.push({id:Date.now(),taskId:t.id,title:t.title,subject:t.subject||'通用',date:now.toISOString(),mastery:avg,scores:[...recallState.scores],source:recallState.source||'五题回忆',nextReviewAt:next.toISOString()});saveData('tasks',tasks);saveData('familiarity_history',familiarityHistory);document.getElementById('recallModal').classList.remove('active');renderDashboard();renderFamiliarity();renderRandom();alert(`本次五题回忆完成！\n综合熟悉度：${avg}%\n建议下次回忆：${delay}天后`)}
+function famRecordsByTask(){let map=new Map();(familiarityHistory||[]).forEach(r=>{let k=String(r.taskId);if(!map.has(k))map.set(k,[]);map.get(k).push(r)});map.forEach(a=>a.sort((x,y)=>new Date(x.date)-new Date(y.date)));return map}
+function renderFamiliarity(){let el=document.getElementById('familiarityList');if(!el)return;let map=famRecordsByTask(),q=(document.getElementById('famSearch')?.value||'').trim().toLowerCase(),sort=document.getElementById('famSort')?.value||'low',rows=[];map.forEach((rs,k)=>{let t=tasks.find(x=>String(x.id)===k),last=rs[rs.length-1];if(!last)return;if(t&&(t.customSubject||/英语|政治/.test(String(t.subject||''))))return;let title=t?.title||last.title;if(q&&!title.toLowerCase().includes(q))return;rows.push({t,last,rs,title})});rows.sort((a,b)=>sort==='low'?a.last.mastery-b.last.mastery:sort==='recent'?new Date(b.last.date)-new Date(a.last.date):sort==='old'?new Date(a.last.date)-new Date(b.last.date):b.rs.length-a.rs.length);el.innerHTML=rows.length?rows.map(x=>`<div class="fam-row" onclick="openFamiliarity(${x.t?x.t.id:x.last.taskId})"><div class="fam-head"><span class="fam-title">${esc(x.title)}</span><b>${x.last.mastery}%</b></div><div class="fam-bar"><div class="fam-fill" style="width:${x.last.mastery}%"></div></div><div class="fam-meta">${esc(x.t?.subject||x.last.subject||'通用')} · ${x.rs.length} 次回忆 · 最近 ${new Date(x.last.date).toLocaleDateString()}</div></div>`).join(''):'<div class="chart-empty">还没有熟悉度历史。完成一次五题回忆后，这里会自动出现。</div>'}
+function makeMiniTrend(rs){let w=330,h=120,p=20,vals=rs.map(r=>r.mastery),max=Math.max(100,...vals),min=0;let pts=vals.map((v,i)=>`${p+i*(w-2*p)/Math.max(1,vals.length-1)},${h-p-(v-min)/(max-min)*(h-2*p)}`).join(' ');return `<svg class="trend-svg" viewBox="0 0 ${w} ${h}"><polyline fill="none" stroke="#000" stroke-width="2" points="${pts}"/>${rs.map((r,i)=>{let xy=pts.split(' ')[i].split(',');return `<circle cx="${xy[0]}" cy="${xy[1]}" r="3" fill="#000"/>`}).join('')}</svg>`}
+function openFamiliarity(id){let rs=(familiarityHistory||[]).filter(r=>String(r.taskId)===String(id)).sort((a,b)=>new Date(a.date)-new Date(b.date)),t=tasks.find(x=>String(x.id)===String(id)),title=t?.title||rs[0]?.title||'知识点';if(!rs.length)return;document.getElementById('genericTitle').textContent='📈 '+title;document.getElementById('genericBody').innerHTML=`<div class="chart-panel">${makeMiniTrend(rs)}</div><div style="margin-top:12px">${rs.slice().reverse().map(r=>`<div class="search-result"><b>${r.mastery}%</b> · ${esc(r.source||'回忆')}<br><span class="muted">${new Date(r.date).toLocaleString()} · ${r.scores?.join(' / ')||'—'}</span></div>`).join('')}</div><button class="btn btn-secondary" style="margin-top:12px" onclick="deleteFamiliarity(${id})">删除该知识点全部历史</button>`;document.getElementById('genericModal').classList.add('active')}
+function deleteFamiliarity(id){if(!confirm('确定删除这个知识点的全部熟悉度历史吗？此操作不会删除学习任务。'))return;familiarityHistory=familiarityHistory.filter(r=>String(r.taskId)!==String(id));let t=tasks.find(x=>String(x.id)===String(id));if(t){t.mastery=null;t.recall=[];t.lastRecall=null;saveData('tasks',tasks)}saveData('familiarity_history',familiarityHistory);closeModal();renderFamiliarity();renderRandom()}
+function renderRandom(){let el=document.getElementById('randomList');if(!el)return;let now=Date.now(),map=famRecordsByTask(),items=[];map.forEach((rs,k)=>{let last=rs[rs.length-1],t=tasks.find(x=>String(x.id)===k);if(!t)return;if(t.customSubject||/英语|政治/.test(String(t.subject||'')))return;let due=last.nextReviewAt?new Date(last.nextReviewAt).getTime()<=now:last.mastery<80&&new Date(last.date).getTime()+3*86400000<=now;if(due)items.push({t,last,rs})});items.sort((a,b)=>a.last.mastery-b.last.mastery||new Date(a.last.date)-new Date(b.last.date));el.innerHTML=items.length?items.slice(0,10).map(x=>`<div class="random-item"><div class="fam-head"><span class="fam-title">${esc(x.t.title)}</span><b>${x.last.mastery}%</b></div><div class="fam-meta">${esc(x.t.subject||'通用')} · 已回忆 ${x.rs.length} 次 · 到期</div><button class="btn btn-small" style="margin-top:7px" onclick="startRandomRecall(${x.t.id})">开始五题回忆</button></div>`).join(''):'<div class="chart-empty">目前没有到期知识点。继续完成五题回忆，系统会自动安排。</div>'}
+function renderTree(){document.getElementById('treeRootContainer').innerHTML='<ul class="tree-list" style="padding-left:0">'+treeHTML(subjectTree)+'</ul>'}
+function treeHTML(n){return `<li class="tree-node"><div class="tree-node-content"><input value="${esc(n.name)}" onchange="renameNode(${n.id},this.value)"><div class="tree-actions"><button style="background:#34C759;color:white" onclick="addNode(${n.id})">+子节点</button>${n.id!==1?`<button style="background:#FF3B30;color:white" onclick="deleteNode(${n.id})">删</button>`:''}</div></div>${n.children?.length?'<ul class="tree-list">'+n.children.map(treeHTML).join('')+'</ul>':''}</li>`}
+function findNode(n,id){if(n.id===id)return n;for(const c of n.children||[]){let r=findNode(c,id);if(r)return r}return null}
+function renameNode(id,v){let n=findNode(subjectTree,id);if(n){n.name=v;saveData('tree',subjectTree)}}
+function addNode(id){let n=findNode(subjectTree,id);if(n){n.children=n.children||[];n.children.push({id:Date.now(),name:'新建子节点',children:[]});saveData('tree',subjectTree);renderTree()}}
+function addRootNode(){subjectTree.children=subjectTree.children||[];subjectTree.children.push({id:Date.now(),name:'新建学科',children:[]});saveData('tree',subjectTree);renderTree()}
+function deleteNode(id){function rm(n){let i=(n.children||[]).findIndex(x=>x.id===id);if(i>=0){n.children.splice(i,1);return true}return (n.children||[]).some(rm)}rm(subjectTree);saveData('tree',subjectTree);renderTree()}
+
+async function loadCodeBank(){
+  if(codeItems.length)return codeItems;
+  if(codeBankPromise)return codeBankPromise;
+  codeBankPromise=(async()=>{
+    const urls=['./code-bank.min.json','./code-bank.json','https://raw.githubusercontent.com/tttosnown/zhu-xi/main/code-bank.min.json','https://raw.githubusercontent.com/tttosnown/zhu-xi/main/code-bank.json'];
+    const errors=[];
+    for(const u of urls){
+      try{
+        const r=await fetch(u,{cache:'default'});
+        if(!r.ok){errors.push(u+' → HTTP '+r.status);continue}
+        const text=await r.text();
+        let d; try{d=JSON.parse(text)}catch(e){errors.push(u+' → JSON解析失败');continue}
+        const arr=Array.isArray(d)?d:(d.items||d.questions||d.data||[]);
+        if(Array.isArray(arr)&&arr.length){codeItems=arr;return arr}
+        errors.push(u+' → 数据为空或格式不识别');
+      }catch(e){errors.push(u+' → '+(e.message||'网络读取失败'))}
+    }
+    codeBankPromise=null;
+    throw new Error('规范题库加载失败。已尝试本地文件和 GitHub Raw。\n'+errors.join('\n'));
+  })();
+  return codeBankPromise;
+}
+function normalizeQ(q){return{title:q.title||q.section_id||q.chapter_id||q.type||'规范考点',content:q.content||q.prompt||q.question||q.q||'',answer:q.answer||q.a||q.explanation||'',refs:q.references||q.reference||q.refs||[],page:q.page}}
+async function loadDailyCodeQuestion(){let title=document.getElementById('codeQTitle'),content=document.getElementById('codeQContent'),answer=document.getElementById('codeQAnswer');try{let a=await loadCodeBank();let pool=a.filter(x=>x.granularity==='挖空题');if(!pool.length)pool=a;let last=localStorage.getItem('zhuxi_last_code_id');let candidates=pool.filter(x=>String(x.id)!==String(last));if(!candidates.length)candidates=pool;let raw=candidates[Math.floor(Math.random()*candidates.length)];localStorage.setItem('zhuxi_last_code_id',raw.id);let q=normalizeQ(raw);currentCode=q;title.textContent=q.title;content.textContent=q.content;answer.innerHTML='<b>参考答案：</b>'+esc(q.answer);answer.style.display='none'}catch(e){title.textContent='规范题库加载失败';content.textContent=e.message}}
+function toggleCodeAnswer(){let e=document.getElementById('codeQAnswer');e.style.display=e.style.display==='none'?'block':'none'}
+async function loadNormLibrary(){if(normLibrary.length)return normLibrary;if(normLibraryPromise)return normLibraryPromise;normLibraryPromise=fetch('./norm-library.json',{cache:'default'}).then(r=>{if(!r.ok)throw new Error('规范查找库加载失败（HTTP '+r.status+'）');return r.json()}).then(d=>{normLibrary=d.standards||[];return normLibrary}).catch(e=>{normLibraryPromise=null;throw e});return normLibraryPromise}
+function normPdfName(n){if(n.standard.includes('50016'))return 'GB50016-2018.pdf';if(n.standard.includes('50504'))return 'GB50504-2009.pdf';if(n.standard.includes('50096'))return 'GB50096-2011.pdf';if(n.standard.includes('50763'))return 'GB50763-2012.pdf';return ''}
+async function searchNorms(){let box=document.getElementById('searchResults');try{let a=await loadNormLibrary(),k=(document.getElementById('searchInput').value||'').trim().toLowerCase();let res=a.filter(q=>{if(!k)return true;let fields=[q.standard,q.chapter,q.article,q.text,...(q.keywords||[])];return fields.some(v=>String(v??'').toLowerCase().includes(k))});normSearchResults=res;let shown=res.slice(0,100);box.innerHTML=`<div class="muted" style="padding:4px 2px 8px">四本规范原文库：${a.length} 条${k?'，匹配 '+res.length+' 条':''}</div>`+shown.map((q,i)=>`<div class="search-result"><b>${esc(q.standard)}</b><div class="muted" style="margin-top:3px">第 ${esc(q.article)} 条 · 第 ${esc(q.pdfPage)} 页${q.keywords?.length?' · '+esc(q.keywords.join(' / ')):''}</div><div style="margin-top:5px;line-height:1.6">${esc(q.text)}</div><div class="actions"><button class="edit-btn" onclick="showNormSource(${i})">查看原文页</button></div></div>`).join('')||'<div style="padding:10px;color:#FF3B30">未找到相关条文。</div>'}catch(e){box.innerHTML='<div style="padding:10px;color:#FF3B30">'+esc(e.message)+'</div>'}}
+function showNormSource(i){let n=normSearchResults[i];if(!n)return;let pdf=normPdfName(n);document.getElementById('genericTitle').textContent=n.article+' · 原文';document.getElementById('genericBody').innerHTML=`<p><b>${esc(n.standard)}</b></p><p class="muted">第 ${esc(n.pdfPage)} 页</p><div style="margin-top:10px;line-height:1.7">${esc(n.text)}</div><button class="btn btn-secondary" style="margin-top:12px" onclick="window.open('./norm-pdfs/${pdf}#page=${n.pdfPage}','_blank')">📄 打开 PDF 原文第 ${n.pdfPage} 页</button>`;document.getElementById('genericModal').classList.add('active')}
+function showCodeAnswer(i,arr=normSearchResults){let n=normalizeQ(arr[i]);document.getElementById('genericTitle').textContent=n.title;document.getElementById('genericBody').innerHTML='<p>'+esc(n.content)+'</p><hr style="margin:10px 0;border:0;border-top:.5px solid var(--line)"><p><b>参考答案：</b>'+esc(n.answer)+'</p>';document.getElementById('genericModal').classList.add('active')}
+
+function openEnglishModal(id=null){editingEnglishId=id;if(id!=null){let e=englishErrors.find(x=>String(x.id)===String(id));if(!e)return;document.getElementById('englishModalTitle').textContent='✎ 编辑英语错误';errType.value=e.type||'其他';document.getElementById('errCount').value=Math.max(1,Number(e.count)||1);errReason.value=e.reason||'';errTip.value=e.tip||''}else{document.getElementById('englishModalTitle').textContent='A 记录英语错误';errType.value='选项辨析';document.getElementById('errCount').value=1;errReason.value='';errTip.value=''}document.getElementById('englishModal').classList.add('active')}
+function closeEnglishModal(){document.getElementById('englishModal').classList.remove('active');editingEnglishId=null}
+function saveEnglishError(){let reason=errReason.value.trim();if(!reason)return alert('请填写为什么错！');let count=Math.max(1,Math.min(999,parseInt(document.getElementById('errCount').value,10)||1));let obj={type:errType.value,count,reason,tip:errTip.value.trim()||'无'};if(editingEnglishId!=null)englishErrors=englishErrors.map(x=>String(x.id)===String(editingEnglishId)?{...x,...obj}:x);else englishErrors.unshift({id:Date.now(),date:todayStr,...obj});saveData('english_errors',englishErrors);closeEnglishModal();renderEnglishErrors()}
+function deleteEnglishError(id){if(!confirm('确认删除这条英语错误记录吗？'))return;englishErrors=englishErrors.filter(x=>String(x.id)!==String(id));saveData('english_errors',englishErrors);renderEnglishErrors()}
+function renderEnglishErrors(){let c=document.getElementById('englishErrorListContainer');c.innerHTML=englishErrors.length?englishErrors.map(e=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="openEnglishModal('${esc(e.id)}')">修改</button><button class="swipe-action delete" onclick="deleteEnglishError('${esc(e.id)}')">删除</button></div><div class="card swipe-content" style="padding:10px;margin-bottom:0;background:#F9F9FB"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub)"><span>📅 ${esc(e.date)}</span><span class="badge">${esc(e.type)} · 错 ${Math.max(1,Number(e.count)||1)} 次</span></div><div style="font-size:13px;margin-top:4px"><b>错因：</b>${esc(e.reason)}</div><div style="font-size:12px;color:#0369A1;margin-top:2px"><b>下次提醒：</b>${esc(e.tip)}</div><div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):'<p class="muted" style="text-align:center;padding:10px">暂无英语错误记录。</p>';initSwipeRows()}
+function openEnglishMonthlySummaryModal(){let counts={},total=0;englishErrors.forEach(e=>{let n=Math.max(1,Number(e.count)||1);total+=n;counts[e.type]=(counts[e.type]||0)+n});let sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);document.getElementById('genericTitle').textContent='▥ 英语月度错误总结';document.getElementById('genericBody').innerHTML=`<p><b>错误记录：</b>${englishErrors.length} 条</p><p><b>累计错误次数：</b>${total} 次</p><p style="margin-top:8px"><b>错误类型：</b></p><ul style="padding-left:20px">${sorted.map(x=>`<li>${esc(x[0])}：${x[1]} 次</li>`).join('')||'<li>暂无数据</li>'}</ul>`;document.getElementById('genericModal').classList.add('active')}
+
+function openVulnerabilityModal(id=null){editingVulnId=id;if(id!=null){let v=vulnerabilities.find(x=>String(x.id)===String(id));if(!v)return;document.getElementById('vulnModalTitle').textContent='✏️ 编辑专业课漏洞';vulnDesc.value=v.desc||''}else{document.getElementById('vulnModalTitle').textContent='! 记个未完全掌握的细节点';vulnDesc.value=''}document.getElementById('vulnModal').classList.add('active')}
+function closeVulnerabilityModal(){document.getElementById('vulnModal').classList.remove('active');editingVulnId=null}
+function saveVulnerability(){let desc=vulnDesc.value.trim();if(!desc)return alert('请填写细节点内容！');if(editingVulnId!=null)vulnerabilities=vulnerabilities.map(v=>String(v.id)===String(editingVulnId)?{...v,desc}:v);else vulnerabilities.unshift({id:Date.now(),date:todayStr,desc,mastered:false});saveData('vulnerabilities',vulnerabilities);closeVulnerabilityModal();renderVulnerabilities()}
+function deleteVulnerability(id){if(!confirm('确认删除这个专业课漏洞吗？'))return;vulnerabilities=vulnerabilities.filter(x=>String(x.id)!==String(id));saveData('vulnerabilities',vulnerabilities);renderVulnerabilities()}
+function toggleVulnerabilityMastered(id){vulnerabilities=vulnerabilities.map(v=>String(v.id)===String(id)?{...v,mastered:!v.mastered}:v);saveData('vulnerabilities',vulnerabilities);renderVulnerabilities()}
+function renderVulnerabilities(){let c=document.getElementById('vulnerabilityListContainer');c.innerHTML=vulnerabilities.length?vulnerabilities.map(v=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="openVulnerability('${esc(v.id)}')">修改</button><button class="swipe-action delete" onclick="deleteVulnerability('${esc(v.id)}')">删除</button></div><div class="card swipe-content" style="padding:10px;margin-bottom:0;background:#F9F9FB"><div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">📅 ${esc(v.date)}</span><button class="btn btn-small ${v.mastered?'btn-secondary':''}" onclick="toggleVulnerabilityMastered('${esc(v.id)}')">${v.mastered?'✓ 已掌握（点击撤销）':'○ 未掌握（点此标记）'}</button></div><div style="font-size:13px;margin-top:4px;${v.mastered?'text-decoration:line-through;color:var(--sub)':''}">${esc(v.desc)}</div><div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):'<p class="muted" style="text-align:center;padding:10px">暂无专业课漏洞记录。</p>';initSwipeRows()}
+
+function closeAllSwipeRows(except=null){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)w.classList.remove('open')})}
+function closeSwipeRow(w){if(!w)return;w.classList.remove('open');let el=w.querySelector('.swipe-content');if(el){el.style.transition='transform .18s ease';el.style.transform='translateX(0)'}}function closeAllSwipeRows(except){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})}function initSwipeRows(){document.querySelectorAll('[data-swipe]').forEach(w=>{if(w.dataset.bound)return;w.dataset.bound='1';let el=w.querySelector('.swipe-content'),startX=0,startY=0,dx=0,moving=false;el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY;dx=0;moving=false;if(w.classList.contains('open'))closeAllSwipeRows(w)},{passive:true});el.addEventListener('touchmove',e=>{if(!startX)return;let x=e.touches[0].clientX,y=e.touches[0].clientY;dx=x-startX;if(Math.abs(y-startY)>Math.abs(dx)+8){startX=0;return}if(Math.abs(dx)>8){moving=true;let base=w.classList.contains('open')?-128:0;let move=Math.max(-128,Math.min(0,base+dx));el.style.transition='none';el.style.transform=`translateX(${move}px)`}},{passive:true});el.addEventListener('touchend',()=>{if(!startX)return;el.style.transition='transform .18s ease';if(moving){if(!w.classList.contains('open')&&dx<-45){closeAllSwipeRows(w);w.classList.add('open');el.style.transform='translateX(-128px)'}else if(w.classList.contains('open')&&dx>45){closeSwipeRow(w)}else if(w.classList.contains('open')){el.style.transform='translateX(-128px)'}else{el.style.transform='translateX(0)'}}startX=0;dx=0});el.addEventListener('click',e=>{if(e.target.closest('button'))return;if(w.classList.contains('open'))closeSwipeRow(w)})})}document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-swipe]'))closeAllSwipeRows()},{passive:true});
+function makeTrendChart(values,labels,title){
+  if(!values.length)return '<div class="chart-empty">暂无足够数据，完成一些学习任务后这里会自动生成趋势图。</div>';
+  let w=340,h=150,p=22,max=Math.max(1,...values),step=values.length===1?0:(w-p*2)/(values.length-1);
+  let pts=values.map((v,i)=>`${(p+i*step).toFixed(1)},${(h-p-(v/max)*(h-p*2)).toFixed(1)}`).join(' ');
+  let circles=values.map((v,i)=>{let x=p+i*step,y=h-p-(v/max)*(h-p*2);return `<circle cx="${x}" cy="${y}" r="3" fill="#e58db2"><title>${esc(labels[i])}：${v} 项</title></circle>`}).join('');
+  let grid=[0,.5,1].map(q=>{let y=h-p-q*(h-p*2);return `<line x1="${p}" x2="${w-p}" y1="${y}" y2="${y}" stroke="#eadfe5" stroke-width="1"/>`}).join('');
+  return `<div class="chart-panel"><div style="font-size:12px;font-weight:600;margin-bottom:4px">${title}</div><svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}<polyline points="${pts}" fill="none" stroke="#e58db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${circles}</svg><div class="trend-labels" style="grid-template-columns:repeat(${labels.length},1fr)">${labels.map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>`
+}
+function renderWeeklySummary(){
+  let d=new Date(),dow=d.getDay()||7,start=new Date(d);start.setDate(d.getDate()-dow+1);start.setHours(0,0,0,0);
+  let end=new Date(start);end.setDate(start.getDate()+7);
+  let week=tasks.filter(t=>{let x=new Date(t.date+'T23:59:59');return x>=start&&x<end});
+  let done=week.filter(t=>t.completed).length,rate=week.length?Math.round(done/week.length*100):0,withM=week.filter(t=>typeof t.mastery==='number'),avg=withM.length?Math.round(withM.reduce((a,t)=>a+t.mastery,0)/withM.length):null,low=withM.filter(t=>t.mastery<60),high=withM.filter(t=>t.mastery>=80);
+  let sub={};week.forEach(t=>sub[t.subject||'其他']=(sub[t.subject||'其他']||0)+1);
+  let topSub=Object.entries(sub).sort((a,b)=>b[1]-a[1])[0]?.[0]||'暂无',advice=[];
+  if(!week.length)advice.push('本周还没有任务数据。先建立少量明确任务，再用五题回忆检测掌握程度。');
+  else{
+    if(rate<70)advice.push(`本周任务完成率为 ${rate}%，优先减少同时推进的任务数量，保证每日核心任务真正完成。`);
+    else if(rate>=90)advice.push(`本周任务完成率为 ${rate}%，执行稳定，可以保持当前任务量。`);
+    if(avg!==null&&avg<60)advice.push(`平均熟悉度仅 ${avg}%，下周应增加“合书回忆”和间隔复述，少做单纯重复阅读。`);
+    else if(avg!==null&&avg>=80)advice.push(`平均熟悉度 ${avg}%，已有较稳定提取能力，可以把更多时间用于新内容或综合题。`);
+    if(low.length)advice.push(`有 ${low.length} 个任务熟悉度低于 60%，建议下周优先复习这些任务。`);
+    if(high.length&&high.length===withM.length)advice.push('已有掌握度数据的任务整体较稳定，可逐渐拉长重复间隔。');
+    advice.push(`本周任务最多的科目是“${topSub}”，下周可继续观察它的任务量与熟悉度是否匹配。`)
+  }
+  let labels=[],vals=[];
+  for(let i=0;i<7;i++){let x=new Date(start);x.setDate(start.getDate()+i);let ds=x.toISOString().split('T')[0];labels.push('周'+'一二三四五六日'[i]);vals.push(week.filter(t=>t.date===ds).length)}
+  document.getElementById('weeklySummaryContent').innerHTML=`<div><b>本周概况</b>：${week.length} 项任务，完成 ${done} 项，完成率 <b>${rate}%</b>；${avg===null?'暂未形成有效熟悉度数据':`平均熟悉度 <b>${avg}%</b>`}。</div><div style="margin-top:10px"><b>系统分析</b></div><ul style="padding-left:20px;margin:6px 0">${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div style="margin-top:10px;background:#f2edf6;padding:10px;border-radius:8px"><b>下周建议</b><br>${esc(advice[0]||'继续保持，并使用五题回忆检测记录真实掌握度。')}</div>`;
+  document.getElementById('weeklyChart').innerHTML=makeTrendChart(vals,labels,'本周每日任务趋势')
+}
+function renderMonthlySummary(){
+  let now=new Date(),y=now.getFullYear(),mo=now.getMonth(),days=new Date(y,mo+1,0).getDate(),start=`${y}-${String(mo+1).padStart(2,'0')}-01`,end=`${y}-${String(mo+1).padStart(2,'0')}-${String(days).padStart(2,'0')}`;
+  let month=tasks.filter(t=>t.date>=start&&t.date<=end),done=month.filter(t=>t.completed).length,rate=month.length?Math.round(done/month.length*100):0,avg=month.length?Math.round(month.reduce((a,t)=>a+Number(t.mastery||0),0)/month.length):0;
+  let labels=[],vals=[],weeks=Math.ceil(days/7);
+  for(let w=0;w<weeks;w++){let a=w*7+1,b=Math.min(days,(w+1)*7);labels.push(`第${w+1}周`);vals.push(month.filter(t=>{let n=Number(t.date.slice(8,10));return n>=a&&n<=b}).length)}
+  document.getElementById('monthlySummaryContent').innerHTML=`<div><b>${y}年${mo+1}月</b>：共 ${month.length} 项任务，完成 ${done} 项，完成率 <b>${rate}%</b>，平均掌握度 <b>${avg}%</b>。</div><div style="margin-top:8px;color:var(--sub);font-size:11px">按周观察学习量变化，帮助判断月底是否出现任务堆积或学习强度波动。</div>`;
+  document.getElementById('monthlyChart').innerHTML=makeTrendChart(vals,labels,'本月每周任务趋势')
+}
+function currentExportObject(){return {app:'筑习',version:3,exported_at:new Date().toISOString(),tasks,subjectTree,englishErrors,vulnerabilities,moods,coffees,distracts,familiarityHistory}}
+function exportDataJSON(){const blob=new Blob([JSON.stringify(currentExportObject(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='筑习备份_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function importDataJSON(){document.getElementById('importFileInput').click()}
+async function handleImportFile(ev){const f=ev.target.files?.[0];ev.target.value='';if(!f)return;try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.tasks)||!d.subjectTree)throw new Error('备份文件格式不正确');if(!confirm('导入后将覆盖当前设备上的筑习数据，确定继续吗？'))return;tasks=d.tasks;subjectTree=d.subjectTree;englishErrors=Array.isArray(d.englishErrors)?d.englishErrors:[];vulnerabilities=Array.isArray(d.vulnerabilities)?d.vulnerabilities:[];moods=d.moods||{};coffees=d.coffees||{};distracts=d.distracts||{};familiarityHistory=Array.isArray(d.familiarityHistory)?d.familiarityHistory:[];['tasks','tree','english_errors','vulnerabilities','moods','coffees','distracts','familiarity_history'].forEach(k=>localStorage.removeItem(KEY+k));saveData('tasks',tasks);saveData('tree',subjectTree);saveData('english_errors',englishErrors);saveData('vulnerabilities',vulnerabilities);saveData('moods',moods);saveData('coffees',coffees);saveData('distracts',distracts);saveData('familiarity_history',familiarityHistory);await writeSnapshotToIDB();renderDashboard();renderTree();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();alert('恢复成功。')}catch(e){alert('导入失败：'+e.message)}}
+function openDataManager(){const body=`<div style="line-height:1.7;font-size:13px"><b>本地数据</b><br>学习记录会自动保存在当前设备，不需要登录。<br><span class="muted">数据库：IndexedDB（浏览器/App 本地）</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn" onclick="exportDataJSON();closeModal()">📤 导出备份</button><button class="btn btn-secondary" onclick="importDataJSON();closeModal()">📥 导入恢复</button></div><div class="muted" style="margin-top:12px;font-size:11px;line-height:1.6">建议在换手机、清理浏览器数据或重大版本更新前导出一次备份。</div>`;document.getElementById('genericTitle').textContent='💾 数据与备份';document.getElementById('genericBody').innerHTML=body;document.getElementById('genericModal').classList.add('active')}
+function clearAllData(){if(confirm('确定清空所有累计数据吗？此操作不可恢复，建议先导出备份。')){localStorage.clear();openZhuxiDB().then(db=>{try{if(db){const tx=db.transaction(ZHUXI_STORE,'readwrite');tx.objectStore(ZHUXI_STORE).clear()}}catch(e){}});location.reload()}}
+
+(async function bootZhuxi(){
+  await loadLocalSnapshot();
+  // 启动时强制以电脑本地今天为锚点，避免旧缓存/跨午夜导致周历停在错误位置。
+  todayStr=localDateString();
+  selectedDate=todayStr;
+  weekCursor=getMonday(todayStr);
+  renderDashboard();renderTree();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();loadDailyCodeQuestion();startDateWatcher();
+  // 首次启动/升级后立即建立 IndexedDB 快照。
+  await writeSnapshotToIDB();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  setTimeout(()=>document.getElementById('startupSplash')?.classList.add('hide'),900);
+})();
+</script>
+
+<div id="installHelpModal" class="modal" onclick="if(event.target===this)closeInstallHelp()">
+  <div class="modal-content">
+    <h2 style="font-size:18px;margin-bottom:12px">📱 安装筑习</h2>
+    <div id="installHelpText" style="font-size:13px;line-height:1.75"></div>
+    <button class="btn" style="margin-top:14px" onclick="closeInstallHelp()">知道了</button>
+  </div>
+</div>
+
+<script>
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+});
+function closeInstallHelp(){document.getElementById('installHelpModal').classList.remove('active')}
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function installApp(){
+  if(isStandalone()){alert('筑习已经安装到设备上了。');return;}
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(()=>{deferredInstallPrompt=null}).catch(()=>{});
+    return;
+  }
+  const ua=navigator.userAgent||'';
+  const isIOS=/iPhone|iPad|iPod/i.test(ua);
+  const isAndroid=/Android/i.test(ua);
+  let html='';
+  if(isIOS){
+    html='<b>iPhone / iPad（Safari）</b><br>点击浏览器底部/顶部的“分享”按钮 → 选择“添加到主屏幕” → 添加。';
+  }else if(isAndroid){
+    html='<b>安卓浏览器</b><br>如果当前浏览器支持 PWA：打开浏览器菜单（⋮）→“安装应用”或“添加到主屏幕”。<br><br>如果菜单里没有这两个选项，说明该浏览器不提供 PWA 安装功能。可以改用 Chrome、Edge 等支持 PWA 的浏览器安装；筑习本身仍可正常网页使用。';
+  }else{
+    html='<b>电脑浏览器</b><br>请查看地址栏右侧是否有“安装”图标；也可以打开浏览器菜单寻找“安装筑习 / 安装应用”。';
+  }
+  document.getElementById('installHelpText').innerHTML=html;
+  document.getElementById('installHelpModal').classList.add('active');
+}
+window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null});
+</script>
+
+</body>
+</html>
