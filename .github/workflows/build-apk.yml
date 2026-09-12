@@ -50,7 +50,6 @@ jobs:
           import android.os.Bundle;
           import android.util.Base64;
           import android.webkit.JavascriptInterface;
-          import android.webkit.WebView;
           import com.getcapacitor.BridgeActivity;
           import java.io.OutputStream;
 
@@ -62,25 +61,9 @@ jobs:
               @Override
               public void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  installExportBridge();
-              }
-
-              @Override
-              public void onResume() {
-                  super.onResume();
-                  installExportBridge();
-              }
-
-              private void installExportBridge() {
-                  try {
-                      if (getBridge() != null) {
-                          WebView webView = getBridge().getWebView();
-                          if (webView != null) {
-                              webView.getSettings().setDomStorageEnabled(true);
-                              webView.addJavascriptInterface(new ExportBridge(), "ZhuxiAndroid");
-                          }
-                      }
-                  } catch (Exception ignored) { }
+                  if (getBridge() != null && getBridge().getWebView() != null) {
+                      getBridge().getWebView().addJavascriptInterface(new ExportBridge(), "ZhuxiAndroid");
+                  }
               }
 
               private class ExportBridge {
@@ -94,36 +77,26 @@ jobs:
                               intent.addCategory(Intent.CATEGORY_OPENABLE);
                               intent.setType("application/json");
                               intent.putExtra(Intent.EXTRA_TITLE, pendingName);
-                              intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                               startActivityForResult(intent, CREATE_DOCUMENT);
                           });
-                      } catch (Exception ignored) {
-                          pendingBytes = null;
-                          pendingName = null;
-                      }
+                      } catch (Exception ignored) { }
                   }
               }
 
               @Override
               protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-                  if (requestCode == CREATE_DOCUMENT) {
-                      if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null && pendingBytes != null) {
-                          Uri uri = data.getData();
-                          try (OutputStream out = getContentResolver().openOutputStream(uri)) {
-                              if (out != null) {
-                                  out.write(pendingBytes);
-                                  out.flush();
-                              }
-                          } catch (Exception ignored) { }
-                          pendingBytes = null;
-                          pendingName = null;
-                          return;
-                      }
+                  super.onActivityResult(requestCode, resultCode, data);
+                  if (requestCode == CREATE_DOCUMENT && resultCode == Activity.RESULT_OK && data != null && data.getData() != null && pendingBytes != null) {
+                      Uri uri = data.getData();
+                      try (OutputStream out = getContentResolver().openOutputStream(uri)) {
+                          if (out != null) out.write(pendingBytes);
+                      } catch (Exception ignored) { }
                       pendingBytes = null;
                       pendingName = null;
-                      return;
+                  } else if (requestCode == CREATE_DOCUMENT) {
+                      pendingBytes = null;
+                      pendingName = null;
                   }
-                  super.onActivityResult(requestCode, resultCode, data);
               }
           }
           EOF
