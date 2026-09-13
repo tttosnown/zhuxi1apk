@@ -14,7 +14,7 @@
 <meta name="theme-color" content="#F2F2F7">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <style>
-:root{--bg:#F2F2F7;--card:#FFF;--text:#1C1C1E;--sub:#8E8E93;--line:#C6C6C8;--accent:#000000;--green:#34C759;--red:#FF3B30;--r:12px}
+:root{--bg:#F2F2F7;--card:#FFF;--text:#1C1C1E;--sub:#5F6F82;--line:#C8D0DA;--accent:#23354D;--accent-soft:#8BA3C5;--accent-pale:#E8EDF4;--accent-deep:#02122F;--green:#5E8F78;--red:#7A2330;--r:12px}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);padding-bottom:90px;padding-top:env(safe-area-inset-top,0px);max-width:600px;margin:auto}
 header{background:rgba(255,255,255,.88);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;padding:16px 20px;border-bottom:.5px solid var(--line);padding-top:calc(16px + env(safe-area-inset-top,0px))}
@@ -23,11 +23,11 @@ header h1{font-size:18px;font-weight:600;display:flex;justify-content:space-betw
 .card h2{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 input,select,textarea{width:100%;padding:10px 12px;border-radius:8px;border:.5px solid var(--line);background:#F9F9FB;font-size:14px;margin-bottom:10px;outline:none}
 input:focus,textarea:focus{border-color:var(--accent);background:#fff}
-.btn{background:var(--accent);color:#fff;border:0;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;width:100%}
-.btn-secondary{background:#E5E5EA;color:var(--text)}.btn-small{padding:4px 10px;font-size:12px;width:auto}
-.delete-btn{background:var(--red);color:#fff;border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
-.edit-btn{background:#E5E5EA;color:var(--text);border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer}
-.badge{font-size:10px;padding:2px 6px;border-radius:4px;background:#E5E5EA}
+.btn{background:var(--accent);color:#fff;border:0;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;width:100%;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.btn-secondary{background:var(--accent-soft);color:var(--accent-deep)}.btn-small{padding:4px 10px;font-size:12px;width:auto}
+.delete-btn{background:var(--accent-deep);color:#fff;border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;touch-action:manipulation}
+.edit-btn{background:var(--accent-soft);color:var(--accent-deep);border:0;padding:4px 8px;border-radius:6px;font-size:11px;cursor:pointer;touch-action:manipulation}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--accent-pale);color:var(--accent-deep)}
 .tab-content{display:none}.tab-content.active{display:block}
 nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(20px);display:flex;justify-content:space-around;padding:8px 2px 20px;border-top:.5px solid var(--line);z-index:1000;max-width:600px;margin:auto}
 .tab-item{text-align:center;font-size:10px;color:var(--sub);cursor:pointer;flex:1}.tab-item.active{color:var(--accent);font-weight:600}.tab-item span{display:block;font-size:16px;margin-bottom:2px}
@@ -38,12 +38,12 @@ nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.
 .task-item{background:#FAFAFC;padding:12px;border-radius:10px;border:.5px solid var(--line);margin-bottom:8px}.task-row{display:flex;align-items:center;justify-content:space-between}.task-info{display:flex;align-items:center;gap:10px;flex:1}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:16px}.modal.active{display:flex}.recall-progress{font-size:12px;color:var(--sub);margin-bottom:10px}.recall-question{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:14px;line-height:1.55}.recall-options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.recall-opt{border:1px solid var(--line);background:white;border-radius:8px;padding:8px 3px;font-size:11px;cursor:pointer}.recall-opt.selected{background:#eee7f5;border-color:#b9a2ce;font-weight:600}.recall-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.modal-content{background:#fff;border-radius:16px;width:100%;max-width:450px;max-height:85vh;overflow-y:auto;padding:20px}
 .tree-list{list-style:none;padding-left:18px;position:relative}.tree-node{margin:6px 0}.tree-node-content{display:flex;align-items:center;gap:6px;background:#F9F9FB;padding:6px 10px;border-radius:8px;border:.5px solid var(--line);width:max-content;max-width:100%}.tree-node-content input{border:0;background:transparent;padding:2px 4px;margin:0;width:auto}.tree-actions{display:flex;gap:4px}.tree-actions button{padding:2px 6px;font-size:11px;border:0;border-radius:4px}.search-result{padding:9px;border-bottom:.5px solid var(--line);font-size:12px}.muted{font-size:11px;color:var(--sub)}.actions{display:flex;gap:6px;margin-top:8px}.actions>*{flex:0 0 auto}
-.swipe-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:8px;background:#000;isolation:isolate}
-.swipe-content{position:relative;z-index:2;transition:transform .22s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
-.swipe-actions{position:absolute;z-index:1;inset:0 0 0 auto;width:128px;display:flex;align-items:stretch;background:#000}
-.swipe-action{width:64px;height:100%;min-height:100%;border:0;color:#fff;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.swipe-action.edit{background:#8E8E93;color:#fff}
-.swipe-action.delete{background:#000;color:#fff}
+.swipe-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:8px;background:var(--accent-deep);isolation:isolate;touch-action:pan-y}
+.swipe-content{position:relative;z-index:2;transition:transform .18s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
+.swipe-actions{position:absolute;z-index:3;inset:0 0 0 auto;width:128px;display:flex;align-items:stretch;background:var(--accent-deep);pointer-events:auto}
+.swipe-action{width:64px;height:100%;min-height:100%;border:0;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;pointer-events:auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.swipe-action.edit{background:var(--accent-soft);color:var(--accent-deep)}
+.swipe-action.delete{background:var(--accent-deep);color:#fff}
 .swipe-wrap.open .swipe-content{transform:translateX(-128px)}
 .swipe-hint{font-size:10px;color:var(--sub);margin-top:6px;text-align:right}
 @media(min-width:700px){.swipe-wrap{overflow:visible}.swipe-actions{display:none}.swipe-content{transform:none!important}.swipe-hint{display:none}}
@@ -110,6 +110,7 @@ nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.
 
 .recall-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:#F2F2F7;color:#555;font-size:24px;line-height:30px;text-align:center;cursor:pointer;padding:0}
 .recall-close:hover{background:#e8e8ed;color:#111}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:active{transform:translateY(0);opacity:.92}
 
 
 /* 启动封面：保持简洁白底，约 0.9 秒后进入筑习 */
@@ -466,10 +467,19 @@ function closeVulnerabilityModal(){document.getElementById('vulnModal').classLis
 function saveVulnerability(){let desc=vulnDesc.value.trim();if(!desc)return alert('请填写细节点内容！');if(editingVulnId!=null)vulnerabilities=vulnerabilities.map(v=>String(v.id)===String(editingVulnId)?{...v,desc}:v);else vulnerabilities.unshift({id:Date.now(),date:todayStr,desc,mastered:false});saveData('vulnerabilities',vulnerabilities);closeVulnerabilityModal();renderVulnerabilities()}
 function deleteVulnerability(id){if(!confirm('确认删除这个专业课漏洞吗？'))return;vulnerabilities=vulnerabilities.filter(x=>String(x.id)!==String(id));saveData('vulnerabilities',vulnerabilities);renderVulnerabilities()}
 function toggleVulnerabilityMastered(id){vulnerabilities=vulnerabilities.map(v=>String(v.id)===String(id)?{...v,mastered:!v.mastered}:v);saveData('vulnerabilities',vulnerabilities);renderVulnerabilities()}
-function renderVulnerabilities(){let c=document.getElementById('vulnerabilityListContainer');c.innerHTML=vulnerabilities.length?vulnerabilities.map(v=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="openVulnerability('${esc(v.id)}')">修改</button><button class="swipe-action delete" onclick="deleteVulnerability('${esc(v.id)}')">删除</button></div><div class="card swipe-content" style="padding:10px;margin-bottom:0;background:#F9F9FB"><div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">📅 ${esc(v.date)}</span><button class="btn btn-small ${v.mastered?'btn-secondary':''}" onclick="toggleVulnerabilityMastered('${esc(v.id)}')">${v.mastered?'✓ 已掌握（点击撤销）':'○ 未掌握（点此标记）'}</button></div><div style="font-size:13px;margin-top:4px;${v.mastered?'text-decoration:line-through;color:var(--sub)':''}">${esc(v.desc)}</div><div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):'<p class="muted" style="text-align:center;padding:10px">暂无专业课漏洞记录。</p>';initSwipeRows()}
+function renderVulnerabilities(){let c=document.getElementById('vulnerabilityListContainer');c.innerHTML=vulnerabilities.length?vulnerabilities.map(v=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="openVulnerabilityModal('${esc(v.id)}')">修改</button><button class="swipe-action delete" onclick="deleteVulnerability('${esc(v.id)}')">删除</button></div><div class="card swipe-content" style="padding:10px;margin-bottom:0;background:#F9F9FB"><div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">📅 ${esc(v.date)}</span><button class="btn btn-small ${v.mastered?'btn-secondary':''}" onclick="toggleVulnerabilityMastered('${esc(v.id)}')">${v.mastered?'✓ 已掌握（点击撤销）':'○ 未掌握（点此标记）'}</button></div><div style="font-size:13px;margin-top:4px;${v.mastered?'text-decoration:line-through;color:var(--sub)':''}">${esc(v.desc)}</div><div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):'<p class="muted" style="text-align:center;padding:10px">暂无专业课漏洞记录。</p>';initSwipeRows()}
 
 function closeAllSwipeRows(except=null){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)w.classList.remove('open')})}
-function closeSwipeRow(w){if(!w)return;w.classList.remove('open');let el=w.querySelector('.swipe-content');if(el){el.style.transition='transform .18s ease';el.style.transform='translateX(0)'}}function closeAllSwipeRows(except){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})}function initSwipeRows(){document.querySelectorAll('[data-swipe]').forEach(w=>{if(w.dataset.bound)return;w.dataset.bound='1';let el=w.querySelector('.swipe-content'),startX=0,startY=0,dx=0,moving=false;el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY;dx=0;moving=false;if(w.classList.contains('open'))closeAllSwipeRows(w)},{passive:true});el.addEventListener('touchmove',e=>{if(!startX)return;let x=e.touches[0].clientX,y=e.touches[0].clientY;dx=x-startX;if(Math.abs(y-startY)>Math.abs(dx)+8){startX=0;return}if(Math.abs(dx)>8){moving=true;let base=w.classList.contains('open')?-128:0;let move=Math.max(-128,Math.min(0,base+dx));el.style.transition='none';el.style.transform=`translateX(${move}px)`}},{passive:true});el.addEventListener('touchend',()=>{if(!startX)return;el.style.transition='transform .18s ease';if(moving){if(!w.classList.contains('open')&&dx<-45){closeAllSwipeRows(w);w.classList.add('open');el.style.transform='translateX(-128px)'}else if(w.classList.contains('open')&&dx>45){closeSwipeRow(w)}else if(w.classList.contains('open')){el.style.transform='translateX(-128px)'}else{el.style.transform='translateX(0)'}}startX=0;dx=0});el.addEventListener('click',e=>{if(e.target.closest('button'))return;if(w.classList.contains('open'))closeSwipeRow(w)})})}document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-swipe]'))closeAllSwipeRows()},{passive:true});
+function closeSwipeRow(w){if(!w)return;w.classList.remove('open');let el=w.querySelector('.swipe-content');if(el){el.style.transition='transform .18s ease';el.style.transform='translateX(0)'}}
+function closeAllSwipeRows(except=null){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})}
+function initSwipeRows(){document.querySelectorAll('[data-swipe]').forEach(w=>{if(w.dataset.bound)return;w.dataset.bound='1';let el=w.querySelector('.swipe-content'),actions=w.querySelector('.swipe-actions'),startX=0,startY=0,dx=0,moving=false;
+  if(actions){actions.querySelectorAll('button').forEach(btn=>{btn.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();btn.click()},{passive:false})})}
+  el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY;dx=0;moving=false;},{passive:true});
+  el.addEventListener('touchmove',e=>{if(!startX)return;let x=e.touches[0].clientX,y=e.touches[0].clientY;dx=x-startX;if(Math.abs(y-startY)>Math.abs(dx)+8){startX=0;return}if(Math.abs(dx)>8){moving=true;let base=w.classList.contains('open')?-128:0;let move=Math.max(-128,Math.min(0,base+dx));el.style.transition='none';el.style.transform=`translateX(${move}px)`}},{passive:true});
+  el.addEventListener('touchend',()=>{if(!startX)return;el.style.transition='transform .18s ease';if(moving){if(!w.classList.contains('open')&&dx<-45){closeAllSwipeRows(w);w.classList.add('open');el.style.transform='translateX(-128px)'}else if(w.classList.contains('open')&&dx>45){closeSwipeRow(w)}else if(w.classList.contains('open')){el.style.transform='translateX(-128px)'}else{el.style.transform='translateX(0)'}}startX=0;dx=0;},{passive:true});
+  el.addEventListener('click',e=>{if(e.target.closest('button'))return;if(w.classList.contains('open'))closeSwipeRow(w)});
+})}
+document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-swipe]'))closeAllSwipeRows()},{passive:true});
 function makeTrendChart(values,labels,title){
   if(!values.length)return '<div class="chart-empty">暂无足够数据，完成一些学习任务后这里会自动生成趋势图。</div>';
   let w=340,h=150,p=22,max=Math.max(1,...values),step=values.length===1?0:(w-p*2)/(values.length-1);
