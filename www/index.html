@@ -39,15 +39,14 @@ nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:16px}.modal.active{display:flex}.recall-progress{font-size:12px;color:var(--sub);margin-bottom:10px}.recall-question{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:14px;line-height:1.55}.recall-options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.recall-opt{border:1px solid var(--line);background:white;border-radius:8px;padding:8px 3px;font-size:11px;cursor:pointer}.recall-opt.selected{background:#eee7f5;border-color:#b9a2ce;font-weight:600}.recall-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.modal-content{background:#fff;border-radius:16px;width:100%;max-width:450px;max-height:85vh;overflow-y:auto;padding:20px}
 .tree-list{list-style:none;padding-left:18px;position:relative}.tree-node{margin:6px 0}.tree-node-content{display:flex;align-items:center;gap:6px;background:#F9F9FB;padding:6px 10px;border-radius:8px;border:.5px solid var(--line);width:max-content;max-width:100%}.tree-node-content input{border:0;background:transparent;padding:2px 4px;margin:0;width:auto}.tree-actions{display:flex;gap:4px}.tree-actions button{padding:2px 6px;font-size:11px;border:0;border-radius:4px}.search-result{padding:9px;border-bottom:.5px solid var(--line);font-size:12px}.muted{font-size:11px;color:var(--sub)}.actions{display:flex;gap:6px;margin-top:8px}.actions>*{flex:0 0 auto}
 .swipe-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:8px;background:var(--accent-deep);isolation:isolate;touch-action:pan-y;width:100%}
-.swipe-content{position:relative;z-index:2;display:block;width:100%;transform:translateX(0);transition:transform .18s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
-.swipe-actions{position:absolute;z-index:1;top:0;right:0;bottom:0;width:128px;height:100%;display:flex;align-items:stretch;background:var(--accent-deep);pointer-events:none}
-.swipe-action{width:64px;height:100%;min-height:100%;border:0;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;pointer-events:auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.swipe-content{position:relative;z-index:2;display:block;width:100%;transform:translate3d(0,0,0);transition:transform .16s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
+.swipe-actions{position:absolute;z-index:3;top:0;right:0;bottom:0;width:128px;height:100%;display:flex;align-items:stretch;background:var(--accent-deep);pointer-events:none}
+.swipe-action{width:64px;height:100%;min-height:100%;margin:0;padding:0;border:0;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;pointer-events:auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .swipe-action.edit{background:var(--accent-soft);color:var(--accent-deep)}
 .swipe-action.delete{background:var(--accent-deep);color:#fff}
 .swipe-wrap.open .swipe-content{transform:translate3d(-128px,0,0)}
 .swipe-wrap.open .swipe-actions{pointer-events:auto}
 .swipe-hint{font-size:10px;color:var(--sub);margin-top:6px;text-align:right}
-@media(min-width:700px){.swipe-wrap{overflow:visible}.swipe-actions{display:none}.swipe-content{transform:none!important}.swipe-hint{display:none}}.swipe-actions{display:none}.swipe-content{transform:none!important}.swipe-hint{display:none}}
 
 .study-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .study-stat{background:var(--soft,#f8f8fa);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
@@ -465,17 +464,97 @@ function deleteVulnerability(id){if(!confirm('确认删除这个专业课漏洞�
 function toggleVulnerabilityMastered(id){vulnerabilities=vulnerabilities.map(v=>String(v.id)===String(id)?{...v,mastered:!v.mastered}:v);saveData('vulnerabilities',vulnerabilities);renderVulnerabilities()}
 function renderVulnerabilities(){let c=document.getElementById('vulnerabilityListContainer');c.innerHTML=vulnerabilities.length?vulnerabilities.map(v=>`<div class="swipe-wrap" data-swipe><div class="swipe-actions"><button class="swipe-action edit" onclick="openVulnerabilityModal('${esc(v.id)}')">修改</button><button class="swipe-action delete" onclick="deleteVulnerability('${esc(v.id)}')">删除</button></div><div class="card swipe-content" style="padding:10px;margin-bottom:0;background:#F9F9FB"><div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">📅 ${esc(v.date)}</span><button class="btn btn-small ${v.mastered?'btn-secondary':''}" onclick="toggleVulnerabilityMastered('${esc(v.id)}')">${v.mastered?'✓ 已掌握（点击撤销）':'○ 未掌握（点此标记）'}</button></div><div style="font-size:13px;margin-top:4px;${v.mastered?'text-decoration:line-through;color:var(--sub)':''}">${esc(v.desc)}</div><div class="swipe-hint">← 左滑管理</div></div></div>`).join(''):'<p class="muted" style="text-align:center;padding:10px">暂无专业课漏洞记录。</p>';initSwipeRows()}
 
-function closeSwipeRow(w){if(!w)return;w.classList.remove('open');const el=w.querySelector('.swipe-content');if(el){el.style.transition='transform .18s ease';el.style.transform='translate3d(0,0,0)'}}
-function closeAllSwipeRows(except=null){document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})}
-function initSwipeRows(){document.querySelectorAll('[data-swipe]').forEach(w=>{if(w.dataset.bound)return;w.dataset.bound='1';const el=w.querySelector('.swipe-content'),actions=w.querySelector('.swipe-actions');if(!el)return;
-  let startX=0,startY=0,dx=0,moving=false,tracking=false;
-  if(actions){actions.querySelectorAll('button').forEach(btn=>{btn.addEventListener('touchend',e=>{e.stopPropagation()},{passive:true})})}
-  el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];startX=t.clientX;startY=t.clientY;dx=0;moving=false;tracking=true;},{passive:true});
-  el.addEventListener('touchmove',e=>{if(!tracking||e.touches.length!==1)return;const t=e.touches[0];dx=t.clientX-startX;const dy=t.clientY-startY;if(Math.abs(dy)>Math.abs(dx)+10){tracking=false;return}if(Math.abs(dx)>8){moving=true;const base=w.classList.contains('open')?-128:0;const move=Math.max(-128,Math.min(0,base+dx));el.style.transition='none';el.style.transform=`translate3d(${move}px,0,0)`;}},{passive:true});
-  el.addEventListener('touchend',()=>{if(!tracking){tracking=false;return}el.style.transition='transform .18s ease';if(moving){if(!w.classList.contains('open')&&dx<-45){closeAllSwipeRows(w);w.classList.add('open');el.style.transform='translate3d(-128px,0,0)'}else if(w.classList.contains('open')&&dx>45){closeSwipeRow(w)}else if(w.classList.contains('open')){el.style.transform='translate3d(-128px,0,0)'}else{el.style.transform='translate3d(0,0,0)'}}tracking=false;startX=0;startY=0;dx=0;moving=false;},{passive:true});
-  el.addEventListener('click',e=>{if(e.target.closest('button'))return;if(w.classList.contains('open'))closeSwipeRow(w)});
-})}
-document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-swipe]'))closeAllSwipeRows()},{passive:true});
+function closeSwipeRow(w){
+  if(!w)return;
+  w.classList.remove('open');
+  const el=w.querySelector('.swipe-content');
+  if(el){el.style.transition='transform .18s ease';el.style.transform='translate3d(0,0,0)'}
+}
+function closeAllSwipeRows(except=null){
+  document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})
+}
+function initSwipeRows(){
+  document.querySelectorAll('[data-swipe]').forEach(w=>{
+    if(w.dataset.bound)return;
+    w.dataset.bound='1';
+    const el=w.querySelector('.swipe-content');
+    const actions=w.querySelector('.swipe-actions');
+    if(!el||!actions)return;
+    let sx=0,sy=0,dx=0,tracking=false,moved=false,suppress=false;
+
+    el.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1)return;
+      if(e.target.closest('button'))return;
+      const t=e.touches[0];
+      sx=t.clientX; sy=t.clientY; dx=0; tracking=true; moved=false; suppress=false;
+    },{passive:true});
+
+    el.addEventListener('touchmove',e=>{
+      if(!tracking||e.touches.length!==1)return;
+      const t=e.touches[0];
+      dx=t.clientX-sx;
+      const dy=t.clientY-sy;
+      if(!moved){
+        if(Math.abs(dy)>Math.abs(dx)+8){tracking=false;return;}
+        if(Math.abs(dx)<8)return;
+        moved=true;
+      }
+      if(Math.abs(dx)>=8){
+        suppress=true;
+        const base=w.classList.contains('open')?-128:0;
+        const move=Math.max(-128,Math.min(0,base+dx));
+        el.style.transition='none';
+        el.style.transform=`translate3d(${move}px,0,0)`;
+        e.preventDefault();
+      }
+    },{passive:false});
+
+    const finish=()=>{
+      if(!tracking)return;
+      el.style.transition='transform .18s ease';
+      if(moved){
+        if(!w.classList.contains('open')&&dx<-35){
+          closeAllSwipeRows(w);
+          w.classList.add('open');
+          el.style.transform='translate3d(-128px,0,0)';
+        }else if(w.classList.contains('open')&&dx>35){
+          closeSwipeRow(w);
+        }else if(w.classList.contains('open')){
+          el.style.transform='translate3d(-128px,0,0)';
+        }else{
+          el.style.transform='translate3d(0,0,0)';
+        }
+      }
+      tracking=false; sx=0; sy=0; dx=0; moved=false;
+    };
+
+    el.addEventListener('touchend',e=>{
+      finish();
+    },{passive:true});
+    el.addEventListener('touchcancel',()=>{
+      if(tracking){
+        el.style.transition='transform .18s ease';
+        el.style.transform=w.classList.contains('open')?'translate3d(-128px,0,0)':'translate3d(0,0,0)';
+      }
+      tracking=false; sx=0; sy=0; dx=0; moved=false;
+    },{passive:true});
+
+    el.addEventListener('click',e=>{
+      if(suppress){
+        e.preventDefault(); e.stopPropagation(); suppress=false; return;
+      }
+      if(e.target.closest('button'))return;
+      if(w.classList.contains('open'))closeSwipeRow(w);
+    });
+    actions.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
+      btn.addEventListener('click',e=>e.stopPropagation());
+    });
+  });
+}
+document.addEventListener('touchstart',e=>{
+  if(!e.target.closest('[data-swipe]'))closeAllSwipeRows();
+},{passive:true});
 function makeTrendChart(values,labels,title){
   if(!values.length)return '<div class="chart-empty">暂无足够数据，完成一些学习任务后这里会自动生成趋势图。</div>';
   let w=340,h=150,p=22,max=Math.max(1,...values),step=values.length===1?0:(w-p*2)/(values.length-1);
