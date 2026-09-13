@@ -101,6 +101,14 @@ jobs:
           }
           EOF
 
+      - name: Apply zhuxi launcher icon
+        run: |
+          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            mkdir -p android/app/src/main/res/mipmap-$density
+            cp www/icon-512.png android/app/src/main/res/mipmap-$density/ic_launcher.png
+            cp www/icon-512.png android/app/src/main/res/mipmap-$density/ic_launcher_round.png
+          done
+
       - name: Build Android APK
         run: |
           cd android
