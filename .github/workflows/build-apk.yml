@@ -42,8 +42,11 @@ jobs:
         run: |
           test -f www/index.html
           grep -q 'swipe-wrap.open .swipe-actions' www/index.html
-          grep -q 'height:52px !important' www/index.html
-          echo 'Verified: edit/delete actions use the below-card swipe layout.'
+          grep -q 'position:absolute !important' www/index.html
+          grep -q 'transform:translate3d(-128px,0,0)' www/index.html
+          grep -q 'bootZhuxi' www/index.html
+          grep -q 'startupSplash.*hide' www/index.html
+          echo 'Verified: right-side swipe actions and startup boot are packaged.'
 
       - name: Add Android backup export bridge
         run: |
