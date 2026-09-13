@@ -38,14 +38,14 @@ nav.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.
 .task-item{background:#FAFAFC;padding:12px;border-radius:10px;border:.5px solid var(--line);margin-bottom:8px}.task-row{display:flex;align-items:center;justify-content:space-between}.task-info{display:flex;align-items:center;gap:10px;flex:1}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:16px}.modal.active{display:flex}.recall-progress{font-size:12px;color:var(--sub);margin-bottom:10px}.recall-question{background:#fafafc;border:1px solid var(--line);border-radius:10px;padding:14px;line-height:1.55}.recall-options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.recall-opt{border:1px solid var(--line);background:white;border-radius:8px;padding:8px 3px;font-size:11px;cursor:pointer}.recall-opt.selected{background:#eee7f5;border-color:#b9a2ce;font-weight:600}.recall-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.modal-content{background:#fff;border-radius:16px;width:100%;max-width:450px;max-height:85vh;overflow-y:auto;padding:20px}
 .tree-list{list-style:none;padding-left:18px;position:relative}.tree-node{margin:6px 0}.tree-node-content{display:flex;align-items:center;gap:6px;background:#F9F9FB;padding:6px 10px;border-radius:8px;border:.5px solid var(--line);width:max-content;max-width:100%}.tree-node-content input{border:0;background:transparent;padding:2px 4px;margin:0;width:auto}.tree-actions{display:flex;gap:4px}.tree-actions button{padding:2px 6px;font-size:11px;border:0;border-radius:4px}.search-result{padding:9px;border-bottom:.5px solid var(--line);font-size:12px}.muted{font-size:11px;color:var(--sub)}.actions{display:flex;gap:6px;margin-top:8px}.actions>*{flex:0 0 auto}
-.swipe-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:8px;background:var(--accent-deep);isolation:isolate;touch-action:pan-y;width:100%}
-.swipe-content{position:relative;z-index:2;display:block;width:100%;transform:translate3d(0,0,0);transition:transform .16s ease;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;min-height:100%;will-change:transform}
-.swipe-actions{position:absolute;z-index:3;top:0;right:0;bottom:0;width:128px;height:100%;display:flex;align-items:stretch;background:var(--accent-deep);pointer-events:none}
-.swipe-action{width:64px;height:100%;min-height:100%;margin:0;padding:0;border:0;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;pointer-events:auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.swipe-wrap{position:relative !important;display:block !important;overflow:hidden !important;width:100% !important;margin:0 0 10px 0 !important;border-radius:10px !important;background:#FAFAFC !important;isolation:isolate;touch-action:pan-y}
+.swipe-content{position:relative !important;z-index:2 !important;display:block !important;width:100% !important;transform:none !important;touch-action:pan-y;background:#FAFAFC;border-radius:10px;overflow:hidden;will-change:auto}
+.swipe-actions{position:relative !important;z-index:1 !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;display:flex !important;flex-direction:row !important;align-items:stretch !important;width:100% !important;height:0 !important;max-height:0 !important;overflow:hidden !important;margin:0 !important;padding:0 !important;background:var(--accent-deep);pointer-events:none;transition:height .18s ease,max-height .18s ease}
+.swipe-action{flex:1 1 50% !important;width:50% !important;height:52px !important;min-height:52px !important;margin:0 !important;padding:0 !important;border:0 !important;color:#fff;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .swipe-action.edit{background:var(--accent-soft);color:var(--accent-deep)}
 .swipe-action.delete{background:var(--accent-deep);color:#fff}
-.swipe-wrap.open .swipe-content{transform:translate3d(-128px,0,0)}
-.swipe-wrap.open .swipe-actions{pointer-events:auto}
+.swipe-wrap.open .swipe-actions{height:52px !important;max-height:52px !important;pointer-events:auto}
+.swipe-wrap.open .swipe-action{pointer-events:auto}
 .swipe-hint{font-size:10px;color:var(--sub);margin-top:6px;text-align:right}
 
 .study-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
@@ -467,8 +467,6 @@ function renderVulnerabilities(){let c=document.getElementById('vulnerabilityLis
 function closeSwipeRow(w){
   if(!w)return;
   w.classList.remove('open');
-  const el=w.querySelector('.swipe-content');
-  if(el){el.style.transition='transform .18s ease';el.style.transform='translate3d(0,0,0)'}
 }
 function closeAllSwipeRows(except=null){
   document.querySelectorAll('[data-swipe].open').forEach(w=>{if(w!==except)closeSwipeRow(w)})
@@ -501,41 +499,25 @@ function initSwipeRows(){
       }
       if(Math.abs(dx)>=8){
         suppress=true;
-        const base=w.classList.contains('open')?-128:0;
-        const move=Math.max(-128,Math.min(0,base+dx));
-        el.style.transition='none';
-        el.style.transform=`translate3d(${move}px,0,0)`;
-        e.preventDefault();
+        if(e.cancelable)e.preventDefault();
       }
     },{passive:false});
 
     const finish=()=>{
       if(!tracking)return;
-      el.style.transition='transform .18s ease';
       if(moved){
         if(!w.classList.contains('open')&&dx<-35){
           closeAllSwipeRows(w);
           w.classList.add('open');
-          el.style.transform='translate3d(-128px,0,0)';
         }else if(w.classList.contains('open')&&dx>35){
           closeSwipeRow(w);
-        }else if(w.classList.contains('open')){
-          el.style.transform='translate3d(-128px,0,0)';
-        }else{
-          el.style.transform='translate3d(0,0,0)';
         }
       }
       tracking=false; sx=0; sy=0; dx=0; moved=false;
     };
 
-    el.addEventListener('touchend',e=>{
-      finish();
-    },{passive:true});
+    el.addEventListener('touchend',()=>finish(),{passive:true});
     el.addEventListener('touchcancel',()=>{
-      if(tracking){
-        el.style.transition='transform .18s ease';
-        el.style.transform=w.classList.contains('open')?'translate3d(-128px,0,0)':'translate3d(0,0,0)';
-      }
       tracking=false; sx=0; sy=0; dx=0; moved=false;
     },{passive:true});
 
@@ -546,6 +528,7 @@ function initSwipeRows(){
       if(e.target.closest('button'))return;
       if(w.classList.contains('open'))closeSwipeRow(w);
     });
+
     actions.querySelectorAll('button').forEach(btn=>{
       btn.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
       btn.addEventListener('click',e=>e.stopPropagation());
@@ -555,66 +538,7 @@ function initSwipeRows(){
 document.addEventListener('touchstart',e=>{
   if(!e.target.closest('[data-swipe]'))closeAllSwipeRows();
 },{passive:true});
-function makeTrendChart(values,labels,title){
-  if(!values.length)return '<div class="chart-empty">暂无足够数据，完成一些学习任务后这里会自动生成趋势图。</div>';
-  let w=340,h=150,p=22,max=Math.max(1,...values),step=values.length===1?0:(w-p*2)/(values.length-1);
-  let pts=values.map((v,i)=>`${(p+i*step).toFixed(1)},${(h-p-(v/max)*(h-p*2)).toFixed(1)}`).join(' ');
-  let circles=values.map((v,i)=>{let x=p+i*step,y=h-p-(v/max)*(h-p*2);return `<circle cx="${x}" cy="${y}" r="3" fill="#e58db2"><title>${esc(labels[i])}：${v} 项</title></circle>`}).join('');
-  let grid=[0,.5,1].map(q=>{let y=h-p-q*(h-p*2);return `<line x1="${p}" x2="${w-p}" y1="${y}" y2="${y}" stroke="#eadfe5" stroke-width="1"/>`}).join('');
-  return `<div class="chart-panel"><div style="font-size:12px;font-weight:600;margin-bottom:4px">${title}</div><svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}<polyline points="${pts}" fill="none" stroke="#e58db2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${circles}</svg><div class="trend-labels" style="grid-template-columns:repeat(${labels.length},1fr)">${labels.map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>`
-}
-function renderWeeklySummary(){
-  let d=new Date((selectedDate||todayStr)+'T12:00:00'),dow=d.getDay()||7,start=new Date(d);start.setDate(d.getDate()-dow+1);start.setHours(0,0,0,0);
-  let end=new Date(start);end.setDate(start.getDate()+7);
-  let week=tasks.filter(t=>{let x=new Date(t.date+'T23:59:59');return x>=start&&x<end});
-  let done=week.filter(t=>t.completed).length,rate=week.length?Math.round(done/week.length*100):0,withM=week.filter(t=>typeof t.mastery==='number'),avg=withM.length?Math.round(withM.reduce((a,t)=>a+t.mastery,0)/withM.length):null,low=withM.filter(t=>t.mastery<60),high=withM.filter(t=>t.mastery>=80);
-  let sub={};week.forEach(t=>sub[t.subject||'其他']=(sub[t.subject||'其他']||0)+1);
-  let topSub=Object.entries(sub).sort((a,b)=>b[1]-a[1])[0]?.[0]||'暂无',advice=[];
-  if(!week.length)advice.push('本周还没有任务数据。先建立少量明确任务，再用五题回忆检测掌握程度。');
-  else{
-    if(rate<70)advice.push(`本周任务完成率为 ${rate}%，优先减少同时推进的任务数量，保证每日核心任务真正完成。`);
-    else if(rate>=90)advice.push(`本周任务完成率为 ${rate}%，执行稳定，可以保持当前任务量。`);
-    if(avg!==null&&avg<60)advice.push(`平均熟悉度仅 ${avg}%，下周应增加“合书回忆”和间隔复述，少做单纯重复阅读。`);
-    else if(avg!==null&&avg>=80)advice.push(`平均熟悉度 ${avg}%，已有较稳定提取能力，可以把更多时间用于新内容或综合题。`);
-    if(low.length)advice.push(`有 ${low.length} 个任务熟悉度低于 60%，建议下周优先复习这些任务。`);
-    if(high.length&&high.length===withM.length)advice.push('已有掌握度数据的任务整体较稳定，可逐渐拉长重复间隔。');
-    advice.push(`本周任务最多的科目是“${topSub}”，下周可继续观察它的任务量与熟悉度是否匹配。`)
-  }
-  let labels=[],vals=[];
-  for(let i=0;i<7;i++){let x=new Date(start);x.setDate(start.getDate()+i);let ds=x.toISOString().split('T')[0];labels.push('周'+'一二三四五六日'[i]);vals.push(week.filter(t=>t.date===ds).length)}
-  document.getElementById('weeklySummaryContent').innerHTML=`<div><b>本周概况</b>：${week.length} 项任务，完成 ${done} 项，完成率 <b>${rate}%</b>；${avg===null?'暂未形成有效熟悉度数据':`平均熟悉度 <b>${avg}%</b>`}。</div><div style="margin-top:10px"><b>系统分析</b></div><ul style="padding-left:20px;margin:6px 0">${advice.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div style="margin-top:10px;background:#f2edf6;padding:10px;border-radius:8px"><b>下周建议</b><br>${esc(advice[0]||'继续保持，并使用五题回忆检测记录真实掌握度。')}</div>`;
-  document.getElementById('weeklyChart').innerHTML=makeTrendChart(vals,labels,'本周每日任务趋势');renderWeeklyTimeChart()
-}
-function renderMonthlySummary(){
-  let now=new Date((selectedDate||todayStr)+'T12:00:00'),y=now.getFullYear(),mo=now.getMonth(),days=new Date(y,mo+1,0).getDate(),start=`${y}-${String(mo+1).padStart(2,'0')}-01`,end=`${y}-${String(mo+1).padStart(2,'0')}-${String(days).padStart(2,'0')}`;
-  let month=tasks.filter(t=>t.date>=start&&t.date<=end),done=month.filter(t=>t.completed).length,rate=month.length?Math.round(done/month.length*100):0,avg=month.length?Math.round(month.reduce((a,t)=>a+Number(t.mastery||0),0)/month.length):0;
-  let labels=[],vals=[],weeks=Math.ceil(days/7);
-  for(let w=0;w<weeks;w++){let a=w*7+1,b=Math.min(days,(w+1)*7);labels.push(`第${w+1}周`);vals.push(month.filter(t=>{let n=Number(t.date.slice(8,10));return n>=a&&n<=b}).length)}
-  document.getElementById('monthlySummaryContent').innerHTML=`<div><b>${y}年${mo+1}月</b>：共 ${month.length} 项任务，完成 ${done} 项，完成率 <b>${rate}%</b>，平均掌握度 <b>${avg}%</b>。</div><div style="margin-top:8px;color:var(--sub);font-size:11px">按周观察学习量变化，帮助判断月底是否出现任务堆积或学习强度波动。</div>`;
-  document.getElementById('monthlyChart').innerHTML=makeTrendChart(vals,labels,'本月每周任务趋势')
-}
-function currentExportObject(){return {app:'筑习',version:3,exported_at:new Date().toISOString(),tasks,subjectTree,englishErrors,vulnerabilities,moods,coffees,distracts,familiarityHistory,studyTimeData}}
-function exportDataJSON(){const text=JSON.stringify(currentExportObject(),null,2),filename='筑习备份_'+localDateString()+'.json';if(window.ZhuxiAndroid&&typeof window.ZhuxiAndroid.saveJson==='function'){try{window.ZhuxiAndroid.saveJson(btoa(unescape(encodeURIComponent(text))),filename);return}catch(e){}}const blob=new Blob([text],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function importDataJSON(){document.getElementById('importFileInput').click()}
-async function handleImportFile(ev){const f=ev.target.files?.[0];ev.target.value='';if(!f)return;try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.tasks)||!d.subjectTree)throw new Error('备份文件格式不正确');if(!confirm('导入后将覆盖当前设备上的筑习数据，确定继续吗？'))return;tasks=d.tasks;subjectTree=d.subjectTree;englishErrors=Array.isArray(d.englishErrors)?d.englishErrors:[];vulnerabilities=Array.isArray(d.vulnerabilities)?d.vulnerabilities:[];moods=d.moods||{};coffees=d.coffees||{};distracts=d.distracts||{};familiarityHistory=Array.isArray(d.familiarityHistory)?d.familiarityHistory:[];studyTimeData=d.studyTimeData&&typeof d.studyTimeData==='object'?d.studyTimeData:{};normalizeTaskData();['tasks','tree','english_errors','vulnerabilities','moods','coffees','distracts','familiarity_history','study_time'].forEach(k=>localStorage.removeItem(KEY+k));saveData('tasks',tasks);saveData('tree',subjectTree);saveData('english_errors',englishErrors);saveData('vulnerabilities',vulnerabilities);saveData('moods',moods);saveData('coffees',coffees);saveData('distracts',distracts);saveData('familiarity_history',familiarityHistory);saveData('study_time',studyTimeData);await writeSnapshotToIDB();applyTimeBackground();renderDashboard();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();alert('恢复成功。')}catch(e){alert('导入失败：'+e.message)}}
-function openDataManager(){const body=`<div style="line-height:1.7;font-size:13px"><b>本地数据</b><br>学习记录会自动保存在当前设备，不需要登录。<br><span class="muted">数据库：IndexedDB（浏览器/App 本地）</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn" onclick="exportDataJSON();closeModal()">📤 导出备份</button><button class="btn btn-secondary" onclick="importDataJSON();closeModal()">📥 导入恢复</button></div><div class="muted" style="margin-top:12px;font-size:11px;line-height:1.6">建议在换手机、清理浏览器数据或重大版本更新前导出一次备份。</div>`;document.getElementById('genericTitle').textContent='💾 数据与备份';document.getElementById('genericBody').innerHTML=body;document.getElementById('genericModal').classList.add('active')}
-function clearAllData(){if(confirm('确定清空所有累计数据吗？此操作不可恢复，建议先导出备份。')){localStorage.clear();openZhuxiDB().then(db=>{try{if(db){const tx=db.transaction(ZHUXI_STORE,'readwrite');tx.objectStore(ZHUXI_STORE).clear()}}catch(e){}});location.reload()}}
 
-(async function bootZhuxi(){
-  await loadLocalSnapshot();
-  normalizeTaskData();
-  timerReconcile();
-  if(studyTimeData&&Object.values(studyTimeData).some(e=>e&&e.running)){const running=Object.entries(studyTimeData).find(([k,e])=>e&&e.running);if(running){activeTimerTaskId=Number(running[0]);activeTimerStartedAt=running[1].startedAt;startTimerTicker()}}
-  // 启动时强制以电脑本地今天为锚点，避免旧缓存/跨午夜导致周历停在错误位置。
-  todayStr=localDateString();
-  selectedDate=todayStr;
-  weekCursor=getMonday(todayStr);
-  applyTimeBackground();renderDashboard();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();startDateWatcher();
-  // 首次启动/升级后立即建立 IndexedDB 快照。
-  await writeSnapshotToIDB();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  setTimeout(()=>document.getElementById('startupSplash')?.classList.add('hide'),900);
-})();
 </script>
 
 <div id="installHelpModal" class="modal" onclick="if(event.target===this)closeInstallHelp()">
