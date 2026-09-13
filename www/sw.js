@@ -1,5 +1,5 @@
-const CACHE='zhuxi-v35-apk-local';
-const ASSETS=['./','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
+const CACHE='zhuxi-v36-apk-local';
+const ASSETS=['./','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png','./moods/mood1.png','./moods/mood2.png','./moods/mood3.png','./moods/mood4.png','./moods/mood5.png','./moods/mood6.png','./moods/mood7.png','./moods/mood8.png','./moods/mood9.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS).catch(()=>{})).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
