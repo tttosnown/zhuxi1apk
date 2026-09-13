@@ -409,6 +409,77 @@ function saveCoffee(ds){let type=document.getElementById('coffeeType_'+ds)?.valu
 function openTaskModal(){closeAllSwipeRows();document.getElementById('genericTitle').textContent='➕ 添加学习任务';document.getElementById('genericBody').innerHTML=taskForm()+`<button class="btn" onclick="saveNewTask()" style="margin-top:10px">保存任务</button>`;document.getElementById('genericModal').classList.add('active')}
 function saveNewTask(){let title=document.getElementById('newTaskTitle').value.trim(),selected=document.getElementById('newTaskSubject').value;tasks.unshift({id:Date.now(),title,subject:subjects.includes(selected)?selected:'其他',customSubject:false,date:document.getElementById('newTaskDate').value||todayStr,completed:false,difficulty:+document.getElementById('newTaskDifficulty').value||3,mastery:null,recall:[],repeat:false});saveData('tasks',tasks);closeModal();renderDashboard()}
 function closeModal(){document.getElementById('genericModal').classList.remove('active')}
+function openDataManager(){
+  const body=`<p class="muted" style="margin-bottom:12px">备份会保存筑习的全部学习记录为 JSON 文件。换手机或重新安装后，可以用“导入 JSON”恢复。</p>
+  <button class="btn" style="width:100%;margin-bottom:10px" onclick="exportDataJSON()">📤 导出 JSON 备份</button>
+  <button class="btn btn-secondary" style="width:100%" onclick="document.getElementById('importFileInput').click()">📥 导入 JSON 备份</button>`;
+  document.getElementById('genericTitle').textContent='💾 数据与备份';
+  document.getElementById('genericBody').innerHTML=body;
+  document.getElementById('genericModal').classList.add('active');
+}
+function makeBackupJSON(){
+  return JSON.stringify({
+    app:'筑习',
+    backup_version:1,
+    exported_at:new Date().toISOString(),
+    data:{tasks,subjectTree,englishErrors,vulnerabilities,moods,coffees,distracts,familiarityHistory,studyTimeData}
+  },null,2);
+}
+function base64UTF8(text){
+  const bytes=new TextEncoder().encode(text), chunk=0x8000;
+  let binary='';
+  for(let i=0;i<bytes.length;i+=chunk)binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  return btoa(binary);
+}
+function exportDataJSON(){
+  try{
+    const json=makeBackupJSON();
+    const filename=`筑习备份-${localDateString()}.json`;
+    if(window.ZhuxiAndroid&&typeof window.ZhuxiAndroid.saveJson==='function'){
+      window.ZhuxiAndroid.saveJson(base64UTF8(json),filename);
+      return;
+    }
+    const blob=new Blob([json],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(e){alert('导出备份失败，请重试。');console.error(e)}
+}
+function applyImportedBackup(raw){
+  const data=raw&&raw.data&&typeof raw.data==='object'?raw.data:raw;
+  if(!data||typeof data!=='object')throw new Error('备份格式错误');
+  if(!Array.isArray(data.tasks)||!Array.isArray(data.englishErrors)||!Array.isArray(data.vulnerabilities))throw new Error('不是有效的筑习 JSON 备份');
+  tasks=data.tasks;
+  subjectTree=data.subjectTree&&typeof data.subjectTree==='object'?data.subjectTree:subjectTree;
+  englishErrors=data.englishErrors;
+  vulnerabilities=data.vulnerabilities;
+  moods=data.moods&&typeof data.moods==='object'?data.moods:{};
+  coffees=data.coffees&&typeof data.coffees==='object'?data.coffees:{};
+  distracts=data.distracts&&typeof data.distracts==='object'?data.distracts:{};
+  familiarityHistory=Array.isArray(data.familiarityHistory)?data.familiarityHistory:[];
+  studyTimeData=data.studyTimeData&&typeof data.studyTimeData==='object'?data.studyTimeData:{};
+  normalizeTaskData();
+  saveData('tasks',tasks);saveData('tree',subjectTree);saveData('english_errors',englishErrors);saveData('vulnerabilities',vulnerabilities);saveData('moods',moods);saveData('coffees',coffees);saveData('distracts',distracts);saveData('familiarity_history',familiarityHistory);saveData('study_time',studyTimeData);
+  writeSnapshotToIDB().catch(()=>{});
+  renderDashboard();renderEnglishErrors();renderVulnerabilities();renderRandom();renderFamiliarity();renderWeeklySummary();renderMonthlySummary();
+}
+function handleImportFile(event){
+  const file=event.target.files&&event.target.files[0];
+  event.target.value='';
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const raw=JSON.parse(String(reader.result||''));
+      if(!confirm('导入备份会覆盖当前筑习数据，确定继续吗？'))return;
+      applyImportedBackup(raw);
+      closeModal();
+      alert('✅ JSON 备份导入成功！');
+    }catch(e){console.error(e);alert('❌ 导入失败：这不是有效的筑习 JSON 备份。')}
+  };
+  reader.onerror=()=>alert('❌ 无法读取这个 JSON 文件。');
+  reader.readAsText(file,'utf-8');
+}
 function openSystemSettings(){const body=`<p class="muted" style="margin-bottom:12px">本版本不需要登录。所有学习记录自动保存在本设备；建议定期备份，换手机时可导出恢复。</p><button class="btn btn-secondary" onclick="alert('⏰ 20:00 晚间提醒测试成功！')" style="margin-bottom:10px">🔔 测试 20:00 晚间提醒</button><button class="btn btn-secondary" onclick="closeModal();openDataManager()" style="margin-bottom:10px">💾 数据与备份</button><button class="btn btn-secondary" onclick="closeModal();clearAllData()" style="color:#FF3B30">🗑️ 清空所有数据</button>`;document.getElementById('genericTitle').textContent='⚙ 系统设置';document.getElementById('genericBody').innerHTML=body;document.getElementById('genericModal').classList.add('active')}
 
 const recallQuestions=[
