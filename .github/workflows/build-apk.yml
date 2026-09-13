@@ -101,8 +101,13 @@ jobs:
           }
           EOF
 
-      - name: Apply zhuxi launcher icon
+      - name: Apply zhuxi launcher icon from www/icon-512.png
         run: |
+          # Remove adaptive launcher XML overrides so www/icon-512.png is the actual launcher bitmap.
+          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          rm -f android/app/src/main/res/mipmap-anydpi/ic_launcher.xml
+          rm -f android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
           for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
             mkdir -p android/app/src/main/res/mipmap-$density
             cp www/icon-512.png android/app/src/main/res/mipmap-$density/ic_launcher.png
