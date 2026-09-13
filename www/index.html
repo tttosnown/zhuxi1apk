@@ -611,5 +611,46 @@ function installApp(){
 window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null});
 </script>
 
+<script>
+(async function bootZhuxi(){
+  const hideSplash=()=>setTimeout(()=>document.getElementById('startupSplash')?.classList.add('hide'),300);
+  try{
+    await Promise.race([
+      loadLocalSnapshot(),
+      new Promise(resolve=>setTimeout(resolve,1500))
+    ]);
+    normalizeTaskData();
+    timerReconcile();
+    if(studyTimeData&&Object.values(studyTimeData).some(e=>e&&e.running)){
+      const running=Object.entries(studyTimeData).find(([k,e])=>e&&e.running);
+      if(running){
+        activeTimerTaskId=Number(running[0]);
+        activeTimerStartedAt=running[1].startedAt;
+        startTimerTicker();
+      }
+    }
+    todayStr=localDateString();
+    selectedDate=todayStr;
+    weekCursor=getMonday(todayStr);
+    applyTimeBackground();
+    renderDashboard();
+    renderEnglishErrors();
+    renderVulnerabilities();
+    renderRandom();
+    renderFamiliarity();
+    renderWeeklySummary();
+    renderMonthlySummary();
+    startDateWatcher();
+    writeSnapshotToIDB().catch(()=>{});
+    if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }catch(err){
+    console.error('筑习启动初始化失败',err);
+    try{applyTimeBackground()}catch(e){}
+  }finally{
+    hideSplash();
+  }
+})();
+</script>
+
 </body>
 </html>
