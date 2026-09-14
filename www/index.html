@@ -16,7 +16,7 @@
 <style>
 :root{--bg:#F2F2F7;--card:#FFF;--text:#1C1C1E;--sub:#5F6F82;--line:#C8D0DA;--accent:#23354D;--accent-soft:#8BA3C5;--accent-pale:#E8EDF4;--accent-deep:#02122F;--green:#5E8F78;--red:#7A2330;--r:12px}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);padding-bottom:90px;padding-top:env(safe-area-inset-top,0px);max-width:600px;margin:auto}
+html{background:var(--time-bg,var(--bg));transition:background-color 1.2s ease}body{background:var(--time-bg,var(--bg));color:var(--text);padding-bottom:90px;padding-top:env(safe-area-inset-top,0px);max-width:600px;margin:auto;transition:background-color 1.2s ease}
 header{background:rgba(255,255,255,.88);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;padding:16px 20px;border-bottom:.5px solid var(--line);padding-top:calc(16px + env(safe-area-inset-top,0px))}
 header h1{font-size:18px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
 .container{padding:16px}.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:.5px solid rgba(0,0,0,.04)}
@@ -249,7 +249,7 @@ function switchTab(id,el){document.querySelectorAll('.tab-content').forEach(x=>x
 function refreshDateContext(){const now=localDateString();if(now!==todayStr){const old=todayStr;todayStr=now;if(selectedDate===old || !selectedDate)selectedDate=now;weekCursor=getMonday(now)}}
 function startDateWatcher(){setInterval(()=>{applyTimeBackground();const old=todayStr;const now=localDateString();if(now!==old){todayStr=now;if(selectedDate===old)selectedDate=now;weekCursor=getMonday(now);renderDashboard()}},60000)}
 
-function applyTimeBackground(){let h=new Date().getHours(),c=h>=6&&h<10?'#F1F5FA':h>=10&&h<16?'#FBF3E8':h>=16&&h<20?'#F8EEF3':h>=20&&h<24?'#F1ECF7':'#ECECEF';document.documentElement.style.setProperty('--time-bg',c);document.body.style.backgroundColor=c}
+function applyTimeBackground(){let h=new Date().getHours(),c=h>=6&&h<10?'#F1F5FA':h>=10&&h<16?'#FBF3E8':h>=16&&h<20?'#F8EEF3':h>=20&&h<24?'#F1ECF7':'#ECECEF';document.documentElement.style.setProperty('--time-bg',c);document.documentElement.style.backgroundColor=c;document.body.style.backgroundColor=c}
 function renderDashboard(){refreshDateContext();renderRoutine();renderMonth();renderDayStatus();renderTasks();renderStudyStats();renderDailyStats();renderDailyPage()}
 
 function secondsForDate(ds){let total=0;tasks.forEach(t=>{if(t.date!==ds)return;let e=studyTimeData[String(t.id)];if(!e)return;total+=Number(e.total)||0;if(e.running&&e.startedAt)total+=Math.max(0,Math.floor((Date.now()-e.startedAt)/1000))});return total}
